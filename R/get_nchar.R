@@ -31,7 +31,17 @@ get_nchar <- function(
 
   if (missing(input)) stop("requires input to be provided")
 
-  if (is.list(input)) {
+  .make_tbl <- function(a, b, c, d) {
+    tibble::rownames_to_column(data.frame(
+      nchar_min = a,
+      nchar_max = b,
+      nchar_median = c,
+      nchar_mean = round(d, 4),
+      nchar_diff = round(d-c, 4),
+      nchar_lgl = ifelse(d-c == 0, TRUE, FALSE)))
+  }
+
+  if (inherits(input, "list")) {
     input[] <- purrr::map(input, function(tab) {
       if (is.factor(tab)) as.character(tab)
       else (tab)
@@ -41,23 +51,24 @@ get_nchar <- function(
     min_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~min(nchar(.x), na.rm=TRUE)))
     med_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~median(nchar(.x), na.rm=TRUE)))
     mean_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~mean(nchar(.x), na.rm=TRUE)))
-  } else if (is.data.frame(input)) {
+
+    nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar), .make_tbl)
+
+  } else if (inherits(input, "data.frame")) {
+    input[] <- purrr::map(input, function(tab) {
+      if (is.factor(tab)) as.character(tab)
+      else (tab)
+    })
+
     max_nchar <- purrr::map_dbl(input, ~max(nchar(.), na.rm=TRUE))
     min_nchar <- purrr::map_dbl(input, ~min(nchar(.), na.rm=TRUE))
     med_nchar <- purrr::map_dbl(input, ~median(nchar(.), na.rm=TRUE))
     mean_nchar <- purrr::map_dbl(input, ~mean(nchar(.), na.rm=TRUE))
-  }
 
-  nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar),
-                          function(a, b, c, d) {
-                            tibble::rownames_to_column(data.frame(
-                              nchar_min = a,
-                              nchar_max = b,
-                              nchar_median = c,
-                              nchar_mean = round(d, 4),
-                              nchar_diff = round(d-c, 4),
-                              nchar_lgl = ifelse(d-c == 0, TRUE, FALSE)))
-                          })
+    nchar_df <- .make_tbl(min_nchar, max_nchar, med_nchar, mean_nchar)
+
+
+  }
 
   if (export) {
     if (missing(path)) {
