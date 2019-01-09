@@ -66,3 +66,4 @@ get_nchar <- function(
   return(nchar_df)
 
 }
+
