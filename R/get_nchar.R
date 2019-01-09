@@ -15,8 +15,9 @@
 #' @return returns a \code{data.frame} or \code{list} of data frames with rows being the input columns and
 #' respective summary statistics for each column
 #'
-#' @importFrom
-#'
+#' @importFrom purrr map map_dbl pmap
+#' @importFrom tibble rownames_to_column
+#' @importFrom readr write_rds
 #' @export
 #'
 #' @examples
@@ -28,16 +29,19 @@ get_nchar <- function(
   path = NULL #specify path for export
   ) {
 
-  if (missing(input)) stop("requires input to be specified")
+  if (missing(input)) stop("requires input to be provided")
 
   if (is.list(input)) {
+    input[] <- purrr::map(input, function(tab) {
+      if (is.factor(tab)) as.character(tab)
+      else (tab)
+    })
+
     max_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~max(nchar(.x), na.rm=TRUE)))
     min_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~min(nchar(.x), na.rm=TRUE)))
     med_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~median(nchar(.x), na.rm=TRUE)))
     mean_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~mean(nchar(.x), na.rm=TRUE)))
-  }
-
-  if (is.data.frame(input)) {
+  } else if (is.data.frame(input)) {
     max_nchar <- purrr::map_dbl(input, ~max(nchar(.), na.rm=TRUE))
     min_nchar <- purrr::map_dbl(input, ~min(nchar(.), na.rm=TRUE))
     med_nchar <- purrr::map_dbl(input, ~median(nchar(.), na.rm=TRUE))
