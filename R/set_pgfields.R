@@ -39,7 +39,6 @@ set_pgfields <- function(
 ) {
 
   if (missing(input)) stop("requires input to be provided")
-  if (missing(conn)) stop("requires conn to be provided")
 
   # helper functions
   .non_default_pgtypes <- function(dat) {
@@ -77,6 +76,7 @@ set_pgfields <- function(
   if (inherits(input, "list")) {
 
     if (default) {
+      if (missing(conn)) stop("requires conn to be provided")
       nchar_df3 <- purrr::map2(nchar_df,
                                DBI::dbDataType(conn, input),
                                function(tab, default_type) {dplyr::mutate(dat, pg_type = default_type)})
@@ -88,6 +88,7 @@ set_pgfields <- function(
   if (inherits(input, "data.frame")) {
 
     if (default) {
+      if (missing(conn)) stop("requires conn to be provided")
       nchar_df3 <- dplyr::left_join(
         nchar_df,
         tibble::rownames_to_column(data.frame(pg_type = DBI::dbDataType(conn, input))),
@@ -101,4 +102,3 @@ set_pgfields <- function(
   return(nchar_df3)
 
 }
-
