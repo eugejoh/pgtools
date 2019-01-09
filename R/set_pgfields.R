@@ -12,7 +12,8 @@
 #' applied by this function when \code{default = TRUE}. Manual adjustment may be required.
 #'
 #' @param input a \code{data.frame} or \code{list} of data frames
-#' @param nchar_df the output from \code{\link{get_nchar}()}
+#' @param nchar_df the output from \code{\link{get_nchar}()}. Running \code{\link{get_nchar}()}
+#' may take a long time and should be saved as an object for use in this function
 #' @param default a \code{logical} option, default method uses \code{\link{DBI::dbDataType}()}
 #' @param conn a object inheriting from \code{DBIDriver} or \code{DBIConnection}
 #'
