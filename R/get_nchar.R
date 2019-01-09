@@ -53,9 +53,9 @@ get_nchar <- function(
     min_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~min(nchar(.x), na.rm=TRUE)))
     med_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~median(nchar(.x), na.rm=TRUE)))
     mean_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~mean(nchar(.x), na.rm=TRUE)))
-    classes <- purrr::map(input, ~purrr:map_char(.x, ~class(.x)))
+    classes <- purrr::map(input, ~purrr:map_chr(.x, ~class(.x)))
 
-    nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar, cl), .make_tbl)
+    nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar, classes, .make_tbl))
 
   } else if (inherits(input, "data.frame")) {
     input[] <- purrr::map(input, function(tab) {
@@ -67,9 +67,9 @@ get_nchar <- function(
     min_nchar <- purrr::map_dbl(input, ~min(nchar(.), na.rm=TRUE))
     med_nchar <- purrr::map_dbl(input, ~median(nchar(.), na.rm=TRUE))
     mean_nchar <- purrr::map_dbl(input, ~mean(nchar(.), na.rm=TRUE))
-    classes <-purrr::map(input, ~class(.))
+    classes <-purrr::map_chr(input, ~class(.))
 
-    nchar_df <- .make_tbl(min_nchar, max_nchar, med_nchar, mean_nchar, cl)
+    nchar_df <- .make_tbl(min_nchar, max_nchar, med_nchar, mean_nchar, classes)
 
   }
 
