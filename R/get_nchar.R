@@ -13,7 +13,7 @@
 #' @param path a \code{file path} option to specify the write location of the binary file
 #'
 #' @return returns a \code{data.frame} or \code{list} of data frames with rows being the input columns and
-#' respective summary statistics for each column
+#' respective summary statistics and classes for each column
 #'
 #' @importFrom purrr map map_dbl pmap
 #' @importFrom tibble rownames_to_column
@@ -31,14 +31,16 @@ get_nchar <- function(
 
   if (missing(input)) stop("requires input to be provided")
 
-  .make_tbl <- function(a, b, c, d) {
+  .make_tbl <- function(a, b, c, d, cl) {
     tibble::rownames_to_column(data.frame(
       nchar_min = a,
       nchar_max = b,
       nchar_median = c,
       nchar_mean = round(d, 4),
       nchar_diff = round(d-c, 4),
-      nchar_lgl = ifelse(d-c == 0, TRUE, FALSE)))
+      nchar_lgl = ifelse(d-c == 0, TRUE, FALSE),
+      class = cl)
+      )
   }
 
   if (inherits(input, "list")) {
@@ -51,8 +53,9 @@ get_nchar <- function(
     min_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~min(nchar(.x), na.rm=TRUE)))
     med_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~median(nchar(.x), na.rm=TRUE)))
     mean_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~mean(nchar(.x), na.rm=TRUE)))
+    classes <- purrr::map(input, ~purrr:map_char(.x, ~class(.x)))
 
-    nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar), .make_tbl)
+    nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar, cl), .make_tbl)
 
   } else if (inherits(input, "data.frame")) {
     input[] <- purrr::map(input, function(tab) {
@@ -64,9 +67,9 @@ get_nchar <- function(
     min_nchar <- purrr::map_dbl(input, ~min(nchar(.), na.rm=TRUE))
     med_nchar <- purrr::map_dbl(input, ~median(nchar(.), na.rm=TRUE))
     mean_nchar <- purrr::map_dbl(input, ~mean(nchar(.), na.rm=TRUE))
+    classes <-purrr::map(input, ~class(.))
 
-    nchar_df <- .make_tbl(min_nchar, max_nchar, med_nchar, mean_nchar)
-
+    nchar_df <- .make_tbl(min_nchar, max_nchar, med_nchar, mean_nchar, cl)
 
   }
 
