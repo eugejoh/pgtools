@@ -53,7 +53,7 @@ get_nchar <- function(
     min_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~min(nchar(.x), na.rm=TRUE)))
     med_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~median(nchar(.x), na.rm=TRUE)))
     mean_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~mean(nchar(.x), na.rm=TRUE)))
-    classes <- purrr::map(input, ~purrr:map_chr(.x, ~class(.x)))
+    classes <- purrr::map(input, ~purrr::map_chr(.x, ~class(.x)))
 
     nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar, classes, .make_tbl))
 
