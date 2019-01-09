@@ -1,3 +1,12 @@
+#' Title
+#'
+#' @param local
+#' @param getenv
+#'
+#' @return
+#' @export
+#'
+#' @examples
 connect_pg <- function(
   local = FALSE, #connect to local postgres if TRUE
   getenv = TRUE #connect using credentials in .REnviron file

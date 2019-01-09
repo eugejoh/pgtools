@@ -1,3 +1,13 @@
+#' Title
+#'
+#' @param x
+#' @param y
+#' @param order_var
+#'
+#' @return
+#' @export
+#'
+#' @examples
 test_pgtable <- function(
   x, #original table
   y, #imported table (this will be done automatically, if not specified)
