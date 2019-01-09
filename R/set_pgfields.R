@@ -39,6 +39,7 @@ set_pgfields <- function(
 ) {
 
   if (missing(input)) stop("requires input to be provided")
+  if (missing(nchar_df)) stop("requires input to be provided, see `get_nchar`")
 
   # helper functions
   .non_default_pgtypes <- function(dat) {
