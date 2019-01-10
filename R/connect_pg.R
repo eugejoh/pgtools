@@ -1,38 +1,50 @@
 #' Connect to Postgres Database
 #'
-#' @param local
-#' @param getenv
-#' @param ...
+#' This is a convenience wrapper to \code{DBI::dbConnect()} where if the database credentials
+#' are saved in the .REnviron file, they will be automatically read.
 #'
-#' @return
+#' All other arguments pass through \code{dbConnect()} except for \code{drv} which is already specified
+#' to \code{RPostgres::Postgres()}
+#'
+#' @param getenv get credentials from the local .REnviron file
+#' @param verbose print database connection information from \code{\link{dbGetInfo}()}
+#' @param ... other arguments to pass through \code{\link{dbConnect}()}
+#'
+#' @return connection to Postgres database
+#'
+#' @import DBI
+#' @import Rpostgres
 #' @export
 #'
 #' @examples
 #'
 #' connect_pg(local = FALSE, getenv = FALSE,
-#'   host = "34.15.631",
+#'   host = DBI::dbDriver("Postgres"),
 #'   port = 5432,
 #'   dbname = "mydb",
 #'   user = "myusername",
 #'   password = "mypw"
 #' )
-
 connect_pg <- function(
-  local = FALSE, #connect to local postgres if TRUE
   getenv = FALSE, #connect using credentials in .REnviron file
+  verbose = FALSE,
   ...) {
 
   if (!getenv) {
-    RPostgres::dbConnect(drv = DBI::dbDriver("Postgres"), ...)
+    con <- DBI::dbConnect(drv = RPostgres::Postgres(), ...)
   }
 
   if (getenv) {
-    RPostgres::dbConnect(
-      drv = DBI::dbDriver("Postgres"),
+    con <- DBI::dbConnect(
+      drv = RPostgres::Postgres(),
       host = Sys.getenv("db_ip"),
       port = 5432, dbname = Sys.getenv("db_name"),
       user = Sys.getenv("db_user"),
       password = Sys.getenv("db_pw"))
   }
+
+  if (verbose) print(DBI::dbGetInfo(con))
+
+  return(con)
 
 }
