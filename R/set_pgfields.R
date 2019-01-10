@@ -75,6 +75,11 @@ set_pgfields <- function(
     return(out)
   }
 
+  .final_out <- function(tab) {
+    pg_type_vec <- as.character(tab$pg_type)
+    names(pg_type_vec) <- tab$rowname
+    return(pg_type_vec)
+  }
 
   if (inherits(input, "list")) {
 
@@ -83,9 +88,12 @@ set_pgfields <- function(
       nchar_df3 <- purrr::map2(nchar_df,
                                DBI::dbDataType(conn, input),
                                function(tab, default_type) {dplyr::mutate(dat, pg_type = default_type)})
-    } else {
-      nchar_df3 <- purrr::map(nchar_df, .non_default_pgtypes)
-    }
+      } else {
+        nchar_df3 <- purrr::map(nchar_df, .non_default_pgtypes)
+        }
+
+    out <- purrr::map(nchar_df3, .final_out)
+
   }
 
   if (inherits(input, "data.frame")) {
@@ -96,12 +104,14 @@ set_pgfields <- function(
         nchar_df,
         tibble::rownames_to_column(data.frame(pg_type = DBI::dbDataType(conn, input))),
         by = "rowname")
-    } else {
-      nchar_df3 <- .non_default_pgtypes(nchar_df)
-    }
+      } else {
+        nchar_df3 <- .non_default_pgtypes(nchar_df)
+      }
+
+    out <- .final_out(nchar_df3)
 
   }
 
-  return(nchar_df3)
+  return(out)
 
 }
