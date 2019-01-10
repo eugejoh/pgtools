@@ -16,16 +16,16 @@
 #'
 #' @return results in a SQL statement to \code{CREATE TABLE}. See \code{DBI::SQL}
 #'
-#' @importFrom purrr map map_chr
-#' @importFrom glue glue_sql
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' nchar_df <- get_nchar(iris)
 #'
 #' my_pgfields <- set_pgfields(nchar_df, conn = local_con_test)
 #'
 #' get_sql_create(my_pg_fields, pkey = "Species", tbl_name = "iris")
+#' }
 get_sql_create <- function(
   pg_fields,
   schema = "public",

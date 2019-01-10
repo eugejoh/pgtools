@@ -12,12 +12,10 @@
 #'
 #' @return connection to Postgres database
 #'
-#' @import DBI
-#' @import Rpostgres
 #' @export
 #'
 #' @examples
-#'
+#'\dontrun{
 #' connect_pg(local = FALSE, getenv = FALSE,
 #'   host = DBI::dbDriver("Postgres"),
 #'   port = 5432,
@@ -25,6 +23,7 @@
 #'   user = "myusername",
 #'   password = "mypw"
 #' )
+#' }
 connect_pg <- function(
   getenv = FALSE,
   verbose = FALSE,

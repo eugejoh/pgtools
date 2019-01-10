@@ -15,12 +15,18 @@
 #'
 #' @return \code{write_pgtable()} returns \code{TRUE} invisibly.
 #'
-#' @importFrom purrr map
-#' @importFrom DBI dbWriteTable Id
-#' @import RPostgres
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' nchar_df <- get_nchar(iris)
+#'
+#' my_fields <- set_pgfields(nchar_df, default = FALSE, conn = DBI::dbConnect(RSQL::SQLite(), ":memory:"))
+#'
+#' write_pgtable(input = iris, field.types = my_fields, conn =DBI::dbConnect(RSQL::SQLite(), ":memory:"),
+#' tbl_name = "iris")
+#' }
+#'
 write_pgtable <- function(
   input,
   field.types = NULL,

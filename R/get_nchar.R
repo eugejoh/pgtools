@@ -14,12 +14,10 @@
 #' @return returns a \code{data.frame} or \code{list} of data frames with rows being the input columns and
 #' respective summary statistics and classes for each column
 #'
-#' @importFrom purrr map map_dbl pmap
-#' @importFrom tibble rownames_to_column
-#' @importFrom readr write_rds
 #' @export
 #'
 #' @examples
+#' data(iris)
 #' get_nchar(iris, type = "mean")
 #'
 get_nchar <- function(

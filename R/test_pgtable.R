@@ -8,6 +8,9 @@
 #' @export
 #'
 #' @examples
+#'\dontrun{
+#' 1 + 1
+#'}
 test_pgtable <- function(
   x, #original table
   y, #imported table (this will be done automatically, if not specified)

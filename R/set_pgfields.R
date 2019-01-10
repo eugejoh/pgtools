@@ -21,18 +21,14 @@
 #' @return returns a named \code{character} vector or \code{list} of named \code{character} vectors that will be used
 #' to specify Postgres table field types when writing to the database.
 #'
-#' @importFrom purrr map map2
-#' @importFrom DBI dbDataType
-#' @importFrom dplyr left_join mutate if_else
-#' @importFrom tibble rownames_to_column
 #' @export
 #'
 #' @examples
-#'
+#' \dontrun{
 #' nchar_df <- get_nchar(iris)
 #'
 #' set_pgfields(nchar_df, conn = local_con_test)
-#'
+#' }
 set_pgfields <- function(
   input,
   nchar_df,
