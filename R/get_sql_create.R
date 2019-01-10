@@ -27,13 +27,13 @@
 #'
 #' get_sql_create(my_pg_fields, pkey = "Species", tbl_name = "iris")
 get_sql_create <- function(
-  pg_fields, #named character vector with variables/fields and respective data/field types
-  schema = "public", #specify name of schema to write to
-  pkey = NULL, #character string for primary key, must be the same for all tables if in a list
-  tbl_name = NULL, #table name required when nchar_df is a data.frame
-  export = FALSE, #export result as data frame to file
-  path = NULL, #specify path for export
-  ...) { #other arguents passed to glue::glue_sql
+  pg_fields,
+  schema = "public",
+  pkey = NULL,
+  tbl_name = NULL,
+  export = FALSE,
+  path = NULL,
+  ...) {
 
   if (missing(pg_fields)) stop("requires input to be provided")
 

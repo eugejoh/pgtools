@@ -34,10 +34,10 @@
 #' set_pgfields(nchar_df, conn = local_con_test)
 #'
 set_pgfields <- function(
-  input, #dataframe OR list of dataframes of tables
-  nchar_df, #dataframe OR list of dataframes from `get_nchar`
-  default = FALSE, #use of DBI::dbDataType when TRUE or custom assigned when FALSE
-  conn = NULL #database connection
+  input,
+  nchar_df,
+  default = FALSE,
+  conn = NULL
 ) {
 
   if (missing(input)) stop("requires input to be provided")
@@ -46,7 +46,7 @@ set_pgfields <- function(
   # helper functions
   .non_default_pgtypes <- function(dat) {
 
-    .add_dtype <- function(type = NULL) { #converts `class` column to Postgres data type
+    .add_dtype <- function(type = NULL) {
       ou <- dplyr::if_else(type == "factor", "character varying",
                            dplyr::if_else(type == "integer", "smallint",
                                           dplyr::if_else(type == "numeric", "real",
@@ -54,12 +54,12 @@ set_pgfields <- function(
                                                                         "not assigned"))))
       return(ou)
     }
-    .add_ndtype <- function( #option of adding (n) to `character` and `character varying` Postgres data types
+    .add_ndtype <- function(
       col = NULL,
       type = c("character", "character varying"),
       num = NULL) {
 
-      .add_n <- function(type, n) paste0(type, "(", n, ")") # helper paste function
+      .add_n <- function(type, n) paste0(type, "(", n, ")")
 
       if (type == "character") ou <- dplyr::if_else(col == "character", .add_n(col, num), col)
 

@@ -22,11 +22,11 @@
 #'
 #' @examples
 write_pgtable <- function(
-  input, #value to write to dbWriteTable
-  field.types = NULL, #field types to use in dbWriteTable (this will be an required input)
-  conn = NULL, #connection to database
-  schema = "public", #specify schema, optional
-  tbl_name = NULL, #table name for single data frame input
+  input,
+  field.types = NULL,
+  conn = NULL,
+  schema = "public",
+  tbl_name = NULL,
   ...
   ) {
 

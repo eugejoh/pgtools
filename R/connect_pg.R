@@ -26,7 +26,7 @@
 #'   password = "mypw"
 #' )
 connect_pg <- function(
-  getenv = FALSE, #connect using credentials in .REnviron file
+  getenv = FALSE,
   verbose = FALSE,
   ...) {
 

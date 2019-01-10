@@ -23,9 +23,9 @@
 #' get_nchar(iris, type = "mean")
 #'
 get_nchar <- function(
-  input, #dataframe OR list of dataframes
-  export = FALSE, #export result as data frame to file
-  path = NULL #specify path for export
+  input,
+  export = FALSE,
+  path = NULL
   ) {
 
   if (missing(input)) stop("requires input to be provided")
