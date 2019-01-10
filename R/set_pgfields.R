@@ -1,6 +1,6 @@
 #' Set or Assign Postgres Field Types
 #'
-#' This function applies a Postgres field type based on either 1. The default output from \code{\link{DBI::dbDataType}()}
+#' This function applies a Postgres field type based on either 1. The default output from \code{DBI::dbDataType()}
 #' or 2. A preset condition that maps \code{R} classes to a specific Postgres field types.
 #'
 #' Factor to character varying (n)
@@ -15,12 +15,13 @@
 #' @param input a \code{data.frame} or \code{list} of data frames
 #' @param nchar_df the output from \code{\link{get_nchar}()}. If \code{nchar_df} is \code{NULL}, then \code{set_pgfields()}
 #' will call \code{\link{get_nchar}()} to calculate appropriate element lengths.
-#' @param default a \code{logical} option, default = \code{TRUE} uses \code{\link{DBI::dbDataType}()}
+#' @param default a \code{logical} option, default = \code{TRUE} uses \code{DBI::dbDataType()}
 #' @param conn a object inheriting from \code{DBIDriver} or \code{DBIConnection}
 #'
 #' @return returns a named \code{character} vector or \code{list} of named \code{character} vectors that will be used
 #' to specify Postgres table field types when writing to the database.
 #'
+#' @importFrom dplyr "%>%"
 #' @export
 #'
 #' @examples
@@ -40,7 +41,7 @@ set_pgfields <- function(
   if (missing(nchar_df)) nchar_df <- get_nchar(input)
 
   # helper functions
-  .non_default_pgtypes <- function(dat) {
+  .non_default_pgtypes <- function(dat = NULL) {
 
     .add_dtype <- function(type = NULL) {
       ou <- dplyr::if_else(type == "factor", "character varying",
@@ -72,7 +73,7 @@ set_pgfields <- function(
   }
 
   .final_out <- function(tab) {
-    pg_type_vec <- as.character(tab$pg_type)
+    pg_type_vec <- as.character(tab[["pg_type"]])
     names(pg_type_vec) <- tab$rowname
     return(pg_type_vec)
   }
@@ -111,3 +112,5 @@ set_pgfields <- function(
   return(out)
 
 }
+
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("pg_type", "nchar_max", "rowname", "dat"))

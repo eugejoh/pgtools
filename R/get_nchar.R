@@ -18,7 +18,7 @@
 #'
 #' @examples
 #' data(iris)
-#' get_nchar(iris, type = "mean")
+#' get_nchar(iris)
 #'
 get_nchar <- function(
   input,

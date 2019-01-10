@@ -30,7 +30,7 @@ This function uses the output from \code{nchar_df()} to generate a SQL \code{CRE
 that can be used to create the skeleton table in Postgres. The result can be copied and pasted for use.
 }
 \details{
-NOTE: \code{\link{write_pg}()} does not use the SQL statement to write to PostgreSQL, but solely uses the result
+NOTE: \code{write_pg()} does not use the SQL statement to write to PostgreSQL, but solely uses the result
 from \code{set_pgfields()}
 }
 \examples{

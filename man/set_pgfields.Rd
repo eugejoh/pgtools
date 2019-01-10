@@ -12,7 +12,7 @@ set_pgfields(input, nchar_df, default = FALSE, conn = NULL)
 \item{nchar_df}{the output from \code{\link{get_nchar}()}. If \code{nchar_df} is \code{NULL}, then \code{set_pgfields()}
 will call \code{\link{get_nchar}()} to calculate appropriate element lengths.}
 
-\item{default}{a \code{logical} option, default = \code{TRUE} uses \code{\link{DBI::dbDataType}()}}
+\item{default}{a \code{logical} option, default = \code{TRUE} uses \code{DBI::dbDataType()}}
 
 \item{conn}{a object inheriting from \code{DBIDriver} or \code{DBIConnection}}
 }
@@ -21,7 +21,7 @@ returns a named \code{character} vector or \code{list} of named \code{character}
 to specify Postgres table field types when writing to the database.
 }
 \description{
-This function applies a Postgres field type based on either 1. The default output from \code{\link{DBI::dbDataType}()}
+This function applies a Postgres field type based on either 1. The default output from \code{DBI::dbDataType()}
 or 2. A preset condition that maps \code{R} classes to a specific Postgres field types.
 }
 \details{

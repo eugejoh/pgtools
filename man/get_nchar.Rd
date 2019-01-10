@@ -28,6 +28,6 @@ See \code{\link{nchar}()}.
 }
 \examples{
 data(iris)
-get_nchar(iris, type = "mean")
+get_nchar(iris)
 
 }

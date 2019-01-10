@@ -6,12 +6,14 @@ Author: person("Eugene", "Joh", email = "johe@smh.ca", role = c("aut", "cre"))
 Maintainer: Eugene Joh <johe@smh.ca>
 Description: This package provides a standardized workflow to write R data frames into a PostgreSQL database. Wrapper functions based on the `DBI` and `RPostgres` packages allow the user to identify field types and varying lengths for elements.
     This has only be tested for PostgreSQL 9.5.
-License: GPL-3
+License: GPL (>=3)
+Depends: R (>= 3.5.0)
 Imports:
   readr,
   purrr,
   tibble,
   dplyr,
+  magrittr,
   glue,
   DBI,
   RPostgres (>= 1.1.1)
