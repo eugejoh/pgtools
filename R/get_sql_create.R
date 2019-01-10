@@ -16,10 +16,8 @@
 #'
 #' @return results in a SQL statement to \code{CREATE TABLE}. See \code{DBI::SQL}
 #'
-#' @importFrom purrr map map2
-#' @importFrom glue glue glue_collapse glue_data
-#' @importFrom tidyr unite
-#'
+#' @importFrom purrr map map_chr
+#' @importFrom glue glue_sql
 #' @export
 #'
 #' @examples
@@ -40,12 +38,12 @@ get_sql_create <- function(
   if (missing(pg_fields)) stop("requires input to be provided")
 
   if (inherits(pg_fields, "list")) {
+    if (!any(pkey %in% purrr::map_chr(pg_fields, names))) stop("requires pkey to be provided")
     out <- purrr::map(names(pg_fields),
         function(nombres) {
           glue::glue_sql("CREATE TABLE ", schema, ".", nombres, " (",
                          paste0(names(pg_fields[[nombres]]), " ", pg_fields[[nombres]], ", ", collapse = " "),
                          " CONSTRAINT ", paste0(nombres,"_pkey"), " PRIMARY KEY (", pkey, ")", ");", ...)
-
         })
 
     names(out) <- names(pg_fields)
@@ -53,6 +51,8 @@ get_sql_create <- function(
   }
 
   if (inherits(pg_fields, "character")) {
+    if (!any(pkey %in% names(pg_fields))) stop("requires pkey to be provided")
+
     nombres <- names(pg_fields)
 
     out <- glue::glue_sql("CREATE TABLE ", schema, ".", tbl_name, " (",
