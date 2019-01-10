@@ -1,10 +1,10 @@
-#' Title
+#' Test Recent Table Write to Postgres
 #'
-#' @param x
-#' @param y
-#' @param order_var
+#' @param x the original table
+#' @param y the imported table residing in Postgres
+#' @param order_var a \code{character} string specifying variable to order both tables
 #'
-#' @return
+#' @return console output of tests, see \code{Description}
 #' @export
 #'
 #' @examples
