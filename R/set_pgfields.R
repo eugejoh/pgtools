@@ -8,13 +8,14 @@
 #' numeric to real
 #' character to character varying (n)
 #'
-#' Care should be taken for fields that should be free text \code{text} or do not conform to the standard
-#' applied by this function when \code{default = TRUE}. Manual adjustment may be required.
+#' It is suggested to run \code{\link{get_nchar}()} prior to using \code{set_pgfields()} as \code{\link{get_nchar}()} is
+#' a computationally expensive task.
+#'
 #'
 #' @param input a \code{data.frame} or \code{list} of data frames
-#' @param nchar_df the output from \code{\link{get_nchar}()}. Running \code{\link{get_nchar}()}
-#' may take a long time and should be saved as an object for use in this function
-#' @param default a \code{logical} option, default method uses \code{\link{DBI::dbDataType}()}
+#' @param nchar_df the output from \code{\link{get_nchar}()}. If \code{nchar_df} is \code{NULL}, then \code{set_pgfields()}
+#' will call \code{\link{get_nchar}()} to calculate appropriate element lengths.
+#' @param default a \code{logical} option, default = \code{TRUE} uses \code{\link{DBI::dbDataType}()}
 #' @param conn a object inheriting from \code{DBIDriver} or \code{DBIConnection}
 #'
 #' @return returns a named \code{character} vector or \code{list} of named \code{character} vectors that will be used
@@ -40,7 +41,7 @@ set_pgfields <- function(
 ) {
 
   if (missing(input)) stop("requires input to be provided")
-  if (missing(nchar_df)) stop("requires input to be provided, see `get_nchar`")
+  if (missing(nchar_df)) nchar_df <- get_nchar(input)
 
   # helper functions
   .non_default_pgtypes <- function(dat) {
