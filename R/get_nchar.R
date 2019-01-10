@@ -8,7 +8,6 @@
 #' See \code{\link{nchar}()}.
 #'
 #' @param input a \code{data.frame} or \code{list} of data frames
-#' @param type a \code{character} option for which summary statistic to use for specifying \code{varying length (n)}
 #' @param export a \code{logical} option export the result as an binary file
 #' @param path a \code{file path} option to specify the write location of the binary file
 #'
