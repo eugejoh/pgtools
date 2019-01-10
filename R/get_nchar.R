@@ -1,4 +1,4 @@
-#' Obtain element lengths from a data frame
+#' Calculate element lengths from a \code{data.frame}
 #'
 #' This function calculates the length of every element within a data frame for later use
 #' to map Postgres field types when writing to the database.
