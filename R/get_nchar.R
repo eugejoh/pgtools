@@ -42,31 +42,35 @@ get_nchar <- function(
       )
   }
 
+  .convert_class <- function(x) {
+    dplyr::mutate_if(x, is.factor, as.character)
+  }
+
+  .keep_old_class <- function(y) {
+    purrr::map_chr(y, class)
+  }
+
   if (inherits(input, "list")) {
-    input[] <- purrr::map(input, function(tab) {
-      if (is.factor(tab)) as.character(tab)
-      else (tab)
-    })
+    classes <- purrr::map(input, ~.keep_old_class(.))
+    input <- purrr::map(input, .convert_class)
 
     max_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~max(nchar(.x), na.rm=TRUE)))
     min_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~min(nchar(.x), na.rm=TRUE)))
     med_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~median(nchar(.x), na.rm=TRUE)))
     mean_nchar <- purrr::map(input, ~purrr::map_dbl(.x, ~mean(nchar(.x), na.rm=TRUE)))
-    classes <- purrr::map(input, ~purrr::map_chr(.x, ~class(.x)))
 
-    nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar, classes, .make_tbl))
+    nchar_df <- purrr::pmap(list(min_nchar, max_nchar, med_nchar, mean_nchar, classes),
+                            .make_tbl)
 
   } else if (inherits(input, "data.frame")) {
-    input[] <- purrr::map(input, function(tab) {
-      if (is.factor(tab)) as.character(tab)
-      else (tab)
-    })
+    classes <- .keep_old_class(input)
+    input <- .convert_class(input)
 
     max_nchar <- purrr::map_dbl(input, ~max(nchar(.), na.rm=TRUE))
     min_nchar <- purrr::map_dbl(input, ~min(nchar(.), na.rm=TRUE))
     med_nchar <- purrr::map_dbl(input, ~median(nchar(.), na.rm=TRUE))
     mean_nchar <- purrr::map_dbl(input, ~mean(nchar(.), na.rm=TRUE))
-    classes <-purrr::map_chr(input, ~class(.))
+
 
     nchar_df <- .make_tbl(min_nchar, max_nchar, med_nchar, mean_nchar, classes)
 
