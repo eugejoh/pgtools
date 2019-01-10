@@ -6,13 +6,13 @@
 #' NOTE: \code{\link{write_pg}()} does not use the SQL statement to write to PostgreSQL, but solely uses the result
 #' from \code{set_pgfields()}
 #'
-#' @param nchar_df the \code{data.frame} or \code{list} of \code{data.frames} from \code{set_pgfields()}
-#' @param export a \code{logical} option export the result as an binary file
-#' @param path a \code{file path} option to specify the write location of the binary file
+#' @param pg_fields a named \code{character} vector or a named \code{list} of named \code{character} vectors
+#' @param schema an optional argument to specify the desired schema for \code{CREATE TABLE}
 #' @param pkey a \code{character} string specifying the primary for the Postgres (PRIMARY KEY and CONSTRAINT)
 #' @param tbl_name a require option if \code{nchar_df} argument is a \code{data.frame}
-#' @param schema an optional argument to specify the desired schema for \code{CREATE TABLE}
-#' @param ... other arguments passed to \code{glue_sql()}
+#' @param export a \code{logical} option export the result as an binary file
+#' @param path a \code{file path} option to specify the write location of the binary file
+#' @param ... other arguments passed to \code{\link{glue_sql}()}
 #'
 #' @return results in a SQL statement to \code{CREATE TABLE}. See \code{DBI::SQL}
 #'
@@ -29,56 +29,36 @@
 #'
 #' get_sql_create(my_pg_fields, pkey = "Species", tbl_name = "iris")
 get_sql_create <- function(
-  nchar_df, #`get_nchar()` output
-  export = FALSE, #export result as data frame to file
-  path = NULL, #specify path for export
+  pg_fields, #named character vector with variables/fields and respective data/field types
+  schema = "public", #specify name of schema to write to
   pkey = NULL, #character string for primary key, must be the same for all tables if in a list
   tbl_name = NULL, #table name required when nchar_df is a data.frame
-  schema = "public", #specify name of schema to write to
-  ...) {
+  export = FALSE, #export result as data frame to file
+  path = NULL, #specify path for export
+  ...) { #other arguents passed to glue::glue_sql
 
-  if (missing(nchar_df)) stop("requires input to be provided")
+  if (missing(pg_fields)) stop("requires input to be provided")
 
-  if (inherits(nchar_df, "list")) {
-    if (sum(unlist(purrr::map(nchar_df, ~grepl("rowname|pg_type", colnames(.))))) != 2*length(nchar_df))
-      stop ("missing approprpiate column names")
-    if (sum(unlist(purrr::map(nchar_df, ~grepl(pkey, .$rowname)))) != length(nchar_df))
-      stop("primary key variable must be in 'rowname' column")
+  if (inherits(pg_fields, "list")) {
+    out <- purrr::map(names(pg_fields),
+        function(nombres) {
+          glue::glue_sql("CREATE TABLE ", schema, ".", nombres, " (",
+                         paste0(names(pg_fields[[nombres]]), " ", pg_fields[[nombres]], ", ", collapse = " "),
+                         " CONSTRAINT ", paste0(nombres,"_pkey"), " PRIMARY KEY (", pkey, ")", ");", ...)
 
-  } else if (inherits(nchar_df, "data.frame")) {
-    if (sum(grepl("rowname|pg_type", colnames(nchar_df))) < 1)
-      stop("missing appropriate column names")
-    if (!any(pkey %in% nchar_df$rowname))
-      stop("primary key variable must be in 'rowname' column")
-    if (missing(tbl_name))
-      stop("name for table must be provided")
-  }
+        })
 
-  if (inherits(nchar_df, "list")) {
-    out <- purrr::map(nchar_df, ~.[,c("rowname", "pg_type")]) %>%
-      purrr::map(~tidyr::unite(., col = "sql_dtype", rowname, pg_type, sep = " ")) %>%
-      purrr::map(~glue::glue_data(., "{sql_dtype},")) %>%
-      purrr::map2(., names(nchar_df),
-                  function(vec, nombre) {
-                    c(vec, glue::glue("CONSTRAINT ", nombre, "_pkey", " PRIMARY KEY ", "(", pkey, ")"))
-                  }) %>%
-      purrr::map2(., names(.),
-                  function(tab, nombre) {
-                    glue::glue_sql("CREATE TABLE ", schema, ".", nombre, " (",
-                               glue::glue_collapse(tab, sep = " "), ");", ...)
-                  })
-
-  } else if (inherits(nchar_df, "data.frame")) {
-    out <- nchar_df[, c("rowname", "pg_type")] %>%
-      tidyr::unite(., col = "sql_dtype", rowname, pg_type, sep = " ") %>%
-      glue::glue_data(., "{sql_dtype},") %>%
-      c(., glue::glue("CONSTRAINT ", tbl_name, "_pkey", " PRIMARY KEY ", "(", pkey, ")")) %>%
-      glue::glue_collapse(., sep = " ") %>%
-      glue::glue_sql("CREATE TABLE ", schema, ".", tbl_name, " (", ., ");", ...)
+    names(out) <- names(pg_fields)
 
   }
 
+  if (inherits(pg_fields, "character")) {
+    nombres <- names(pg_fields)
+
+    out <- glue::glue_sql("CREATE TABLE ", schema, ".", tbl_name, " (",
+               paste0(names(pg_fields), " ", paste0(pg_fields, ", "), collapse = " "),
+               " CONSTRAINT ", paste0(tbl_name, "_pkey"), " PRIMARY KEY (", pkey, ")", ");", ...)
+    }
   return(out)
-
-}
+  }
 
