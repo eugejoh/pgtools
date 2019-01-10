@@ -1,12 +1,23 @@
-#' Title
+#' Write \code{data.frames} to Postgres
 #'
-#' @param input
-#' @param field.types
-#' @param conn
-#' @param schema
-#' @param ...
+#' This function takes a \code{data.frame} or a \code{list} of \code{data.frames} and writes them to a
+#' specified \code{schema} using your database connection \code{conn}. Field types should be specified, it not
+#' the default values from \code{\link{dbDataType}()} will be used.
 #'
-#' @return
+#' This function is essentially a wrapper for \code{\link{dbWriteTable}()}. See details in \code{RPostgres}
+#' documentation under \code{postgres-tables}.
+#'
+#' @param input a \code{data.frame} or \code{list} of data frames.
+#' @param field.types a named \code{character} vector or a named \code{list} of named \code{character} vectors.
+#' @param conn a object inheriting from \code{DBIDriver} or \code{DBIConnection}.
+#' @param schema an optional argument to specify the desired database schema location, default is \code{public}
+#' @param ... other arguments passed to \code{\link{dbWriteTable}()}.
+#'
+#' @return \code{write_pgtable()} returns \code{TRUE} invisibly.
+#'
+#' @importFrom purrr map
+#' @importFrom DBI dbWriteTable Id
+#' @import RPostgres
 #' @export
 #'
 #' @examples
@@ -14,8 +25,37 @@ write_pgtable <- function(
   input, #value to write to dbWriteTable
   field.types = NULL, #field types to use in dbWriteTable (this will be an required input)
   conn = NULL, #connection to database
-  schema = NULL, #specify schema, optional
+  schema = "public", #specify schema, optional
+  tbl_name = NULL, #table name for single data frame input
   ...
   ) {
+
+  if (inherits(input, "list")) {
+    purrr::map(names(input), function(tab) {
+      DBI::dbWriteTable(
+        conn = conn,
+        name = DBI::Id(schema = schema, table = tab),
+        value = input[[tab]],
+        field.types = field.types[[tab]],
+        overwrite = TRUE,
+        ...)
+      message(paste0("WRITE TABLE for ", tab, " completed"))
+    })
+
+
+  }
+
+  if (inherits(input, "data.frame")) {
+    if (missing(tbl_name)) stop("requires tbl_name to be provided")
+    DBI::dbWriteTable(
+      conn = conn,
+      name = DBI::Id(schema = schema, table = tbl_name),
+      value = input,
+      field.types = field.types,
+      overwrite = TRUE,
+      ...)
+    message(paste0("WRITE TABLE for ", tbl_name, " completed"))
+
+  }
 
 }
