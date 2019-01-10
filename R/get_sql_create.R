@@ -38,7 +38,7 @@ get_sql_create <- function(
   if (missing(pg_fields)) stop("requires input to be provided")
 
   if (inherits(pg_fields, "list")) {
-    if (!any(pkey %in% purrr::map_chr(pg_fields, names))) stop("requires pkey to be provided")
+    if (!any(pkey %in% unlist(purrr::map(pg_fields, names)))) stop("requires pkey to be provided")
     out <- purrr::map(names(pg_fields),
         function(nombres) {
           glue::glue_sql("CREATE TABLE ", schema, ".", nombres, " (",
