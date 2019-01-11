@@ -16,7 +16,7 @@
 #'
 #' @examples
 #'\dontrun{
-#' connect_pg(local = FALSE, getenv = FALSE,
+#' connect_pg(getenv = FALSE,
 #'   host = DBI::dbDriver("Postgres"),
 #'   port = 5432,
 #'   dbname = "mydb",

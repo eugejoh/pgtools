@@ -18,5 +18,27 @@ library(devtools)
 devtools::install_github("eugejoh/pgtools")
 ```
 
-More details to follow...
+## Typical Workflow
+This section outlines a typical workflow of writing a data frame from a R session to a PostgreSQL database connection.
 
+```
+data(iris)
+
+my_conn <- connect_pg(getenv = FALSE,
+   host = DBI::dbDriver("Postgres"),
+   port = 5432,
+   dbname = "mydb",
+   user = "myusername",
+   password = "mypw"
+ )
+
+my_nchar <- get_nchar(iris)
+
+set_pgfields(nchar_df, conn = local_con_test)
+
+write_pgtable(input = iris,
+   field.types = my_fields,
+   conn = my_conn,
+   tbl_name = "iris")
+
+```
