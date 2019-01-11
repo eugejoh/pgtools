@@ -88,13 +88,12 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(my_list)
 
 # Postgres Field Types
-my_fields <- set_pgfields(nchar_df, conn = local_con_test)
+my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 # Write to Postgres
 write_pgtable(input = iris,
    field.types = my_fields,
-   conn = my_conn,
-   tbl_name = "iris")
+   conn = my_conn)
 
 ```
 
