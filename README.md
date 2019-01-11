@@ -22,6 +22,7 @@ devtools::install_github("eugejoh/pgtools")
 This section outlines a typical workflow of writing a data frame from a R session to a PostgreSQL database connection.
 
 ```
+# Single data frame
 data(iris)
 
 my_conn <- connect_pg(getenv = FALSE,
@@ -34,7 +35,36 @@ my_conn <- connect_pg(getenv = FALSE,
 
 my_nchar <- get_nchar(iris)
 
-set_pgfields(nchar_df, conn = local_con_test)
+my_fields <- set_pgfields(nchar_df, conn = local_con_test)
+
+write_pgtable(input = iris,
+   field.types = my_fields,
+   conn = my_conn,
+   tbl_name = "iris")
+
+```
+
+```
+Mulitple data frames
+data(iris)
+data(swiss)
+data(mtcars)
+data(cars)
+
+my_list <- list(iris, swiss, mtcars, cars)
+names(my_list) <- c("iris", "swiss", "mtcars", "cars")
+
+my_conn <- connect_pg(getenv = FALSE,
+   host = DBI::dbDriver("Postgres"),
+   port = 5432,
+   dbname = "mydb",
+   user = "myusername",
+   password = "mypw"
+ )
+
+my_nchar <- get_nchar(my_list)
+
+my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 
 write_pgtable(input = iris,
    field.types = my_fields,
