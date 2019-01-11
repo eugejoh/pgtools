@@ -37,7 +37,8 @@ connect_pg <- function(
     con <- DBI::dbConnect(
       drv = RPostgres::Postgres(),
       host = Sys.getenv("db_ip"),
-      port = 5432, dbname = Sys.getenv("db_name"),
+      port = 5432,
+      dbname = Sys.getenv("db_name"),
       user = Sys.getenv("db_user"),
       password = Sys.getenv("db_pw"))
   }
