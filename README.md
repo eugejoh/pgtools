@@ -18,6 +18,21 @@ library(devtools)
 devtools::install_github("eugejoh/pgtools")
 ```
 
+## Database Connection
+[Best practices](https://db.rstudio.com/best-practices/managing-credentials/) with storing and using credentials, steps here should be followed to access the `.REnviron` file. By default `pgtools::connect_pg()` searches your `.REnviron` file to retrieve the appropriate information.  
+
+The `.REnviron` file should have the following variables:  
+```
+db_ip='my ip here'
+
+db_user='my username here'
+
+db_pw='my password here'
+
+db_name='my database name here'
+
+```
+
 ## Typical Workflow
 This section outlines a typical workflow of writing a data frame from a R session to a PostgreSQL database connection.
 

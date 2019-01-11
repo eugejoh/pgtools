@@ -69,5 +69,4 @@ write_pgtable <- function(
     message(paste0("WRITE TABLE for ", tbl_name, " completed"))
 
   }
-
 }
