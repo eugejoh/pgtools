@@ -30,7 +30,6 @@ db_user='my username here'
 db_pw='my password here'
 
 db_name='my database name here'
-
 ```
 
 ## Typical Workflow
