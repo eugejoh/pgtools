@@ -21,10 +21,12 @@ devtools::install_github("eugejoh/pgtools")
 ## Typical Workflow
 This section outlines a typical workflow of writing a data frame from a R session to a PostgreSQL database connection.
 
+Example for single data frame using the `iris` dataset.
 ```
 # Single data frame
 data(iris)
 
+# Connect to database
 my_conn <- connect_pg(getenv = FALSE,
    host = DBI::dbDriver("Postgres"),
    port = 5432,
@@ -33,10 +35,13 @@ my_conn <- connect_pg(getenv = FALSE,
    password = "mypw"
  )
 
+# Element lengths
 my_nchar <- get_nchar(iris)
 
+# Postgres Field Types
 my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 
+# Write to Postgres
 write_pgtable(input = iris,
    field.types = my_fields,
    conn = my_conn,
@@ -44,16 +49,19 @@ write_pgtable(input = iris,
 
 ```
 
+Example for a list of data
 ```
-Mulitple data frames
+# Mulitple data frames
 data(iris)
 data(swiss)
 data(mtcars)
 data(cars)
 
+# Named list of data frames
 my_list <- list(iris, swiss, mtcars, cars)
 names(my_list) <- c("iris", "swiss", "mtcars", "cars")
 
+# Connect to database
 my_conn <- connect_pg(getenv = FALSE,
    host = DBI::dbDriver("Postgres"),
    port = 5432,
@@ -62,13 +70,41 @@ my_conn <- connect_pg(getenv = FALSE,
    password = "mypw"
  )
 
+# Element lengths
 my_nchar <- get_nchar(my_list)
 
+# Postgres Field Types
 my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 
+# Write to Postgres
 write_pgtable(input = iris,
    field.types = my_fields,
    conn = my_conn,
    tbl_name = "iris")
 
+```
+
+Example obtaining the `SQL` statement for `CREATE TABLE` with added primary key.  
+```
+data(iris)
+
+# Connect to database
+my_conn <- connect_pg(getenv = FALSE,
+   host = DBI::dbDriver("Postgres"),
+   port = 5432,
+   dbname = "mydb",
+   user = "myusername",
+   password = "mypw"
+ )
+
+# Add ID for Primary Key
+iris$id <- seq_along(1:nrow(iris))
+
+# Element lengths
+my_nchar <- get_nchar(iris)
+
+# Postgres Field Types
+my_fields <- set_pgfields(nchar_df, conn = my_conn)
+
+get_sql_create(my_pg_fields, pkey = "id", tbl_name = "iris")
 ```
