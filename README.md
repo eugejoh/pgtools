@@ -36,7 +36,7 @@ db_name='my database name here'
 ## Typical Workflow
 This section outlines a typical workflow of writing a data frame from a R session to a PostgreSQL database connection.
 
-Example for single data frame using the `iris` dataset.
+<b>Example for single data frame using the `iris` dataset:</b>
 ```
 # Single data frame
 data(iris)
@@ -64,7 +64,7 @@ write_pgtable(input = iris,
 
 ```
 
-Example for a list of data
+<b>Example for a list of data frames:</b>
 ```
 # Mulitple data frames
 data(iris)
@@ -99,7 +99,7 @@ write_pgtable(input = iris,
 
 ```
 
-Example obtaining the `SQL` statement for `CREATE TABLE` with added primary key.  
+<b>Example obtaining the `SQL` statement for `CREATE TABLE` with added primary key.  </b>
 ```
 data(iris)
 
