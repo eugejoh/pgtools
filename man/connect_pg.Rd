@@ -26,8 +26,8 @@ to \code{RPostgres::Postgres()}
 }
 \examples{
 \dontrun{
-connect_pg(local = FALSE, getenv = FALSE,
-  host = DBI::dbDriver("Postgres"),
+connect_pg(getenv = FALSE,
+  drv = DBI::dbDriver("Postgres"),
   port = 5432,
   dbname = "mydb",
   user = "myusername",

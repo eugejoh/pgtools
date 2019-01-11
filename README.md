@@ -42,7 +42,8 @@ data(iris)
 
 # Connect to database
 my_conn <- connect_pg(getenv = FALSE,
-   host = DBI::dbDriver("Postgres"),
+   drv = DBI::dbDriver("Postgres"),
+   host = "myhostname"
    port = 5432,
    dbname = "mydb",
    user = "myusername",
@@ -77,7 +78,8 @@ names(my_list) <- c("iris", "swiss", "mtcars", "cars")
 
 # Connect to database
 my_conn <- connect_pg(getenv = FALSE,
-   host = DBI::dbDriver("Postgres"),
+   drv = DBI::dbDriver("Postgres"),
+   host = "myhostname"
    port = 5432,
    dbname = "mydb",
    user = "myusername",
@@ -103,7 +105,8 @@ data(iris)
 
 # Connect to database
 my_conn <- connect_pg(getenv = FALSE,
-   host = DBI::dbDriver("Postgres"),
+   drv = DBI::dbDriver("Postgres"),
+   host = "myhostname"
    port = 5432,
    dbname = "mydb",
    user = "myusername",
