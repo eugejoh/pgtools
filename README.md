@@ -19,7 +19,7 @@ devtools::install_github("eugejoh/pgtools")
 ```
 
 ## Database Connection
-[Best practices](https://db.rstudio.com/best-practices/managing-credentials/) with storing and using credentials, steps here should be followed to access the `.REnviron` file. By default `pgtools::connect_pg()` searches your `.REnviron` file to retrieve the appropriate information.  
+Best practices with storing and using credentials, steps [**here**](https://db.rstudio.com/best-practices/managing-credentials/#use-environment-variables) should be followed to access the `.REnviron` file. By default `pgtools::connect_pg()` searches your `.REnviron` file to retrieve the appropriate information.  
 
 The `.REnviron` file should have the following variables:  
 ```
