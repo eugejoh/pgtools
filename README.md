@@ -99,7 +99,7 @@ write_pgtable(input = iris,
 
 ```
 
-<b>Example obtaining the `SQL` statement for `CREATE TABLE` with added primary key.  </b>
+<b>Example obtaining the `SQL` statement for `CREATE TABLE` with added primary key:  </b>
 ```
 data(iris)
 
