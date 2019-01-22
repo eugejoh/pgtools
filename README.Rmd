@@ -49,6 +49,11 @@ db_name='my database name here'
 
 ## Typical Workflow
 This section outlines a typical workflow of writing a data frame from a R session to a PostgreSQL database connection.
+<!-- put diagrammeR flowchart here -->
+```{r diagrammer_flowchart, eval = TRUE}
+
+```
+
 
 <b>Example for single data frame using the `iris` dataset:</b>
 ```{r}
@@ -58,7 +63,7 @@ data(iris)
 # Connect to database
 my_conn <- connect_pg(getenv = FALSE,
    drv = DBI::dbDriver("Postgres"),
-   host = "myhostname"
+   host = "myhostname",
    port = 5432,
    dbname = "mydb",
    user = "myusername",
@@ -93,17 +98,12 @@ names(my_list) <- c("iris", "swiss", "mtcars", "cars")
 # Connect to database
 my_conn <- connect_pg(getenv = FALSE,
    drv = DBI::dbDriver("Postgres"),
-   host = "myhostname"
+   host = "myhostname",
    port = 5432,
    dbname = "mydb",
    user = "myusername",
    password = "mypw"
  )
----
-output: github_document
----
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # Element lengths
 my_nchar <- get_nchar(my_list)
@@ -125,7 +125,7 @@ data(iris)
 # Connect to database
 my_conn <- connect_pg(getenv = FALSE,
    drv = DBI::dbDriver("Postgres"),
-   host = "myhostname"
+   host = "myhostname",
    port = 5432,
    dbname = "mydb",
    user = "myusername",
