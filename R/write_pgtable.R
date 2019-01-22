@@ -58,7 +58,7 @@ write_pgtable <- function(
   }
 
   if (inherits(input, "data.frame")) {
-    if (missing(tbl_name)) stop("requires tbl_name to be provided")
+    if (missing(tbl_name)) tbl_name <- deparse(substitute(input))
     DBI::dbWriteTable(
       conn = conn,
       name = DBI::Id(schema = schema, table = tbl_name),
