@@ -52,6 +52,7 @@ get_sql_create <- function(
 
   if (inherits(pg_fields, "character")) {
     if (!any(pkey %in% names(pg_fields))) stop("requires pkey to be provided")
+    if (missing(tbl_name)) stop("requires table name to be provided")
 
     nombres <- names(pg_fields)
 
