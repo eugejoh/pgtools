@@ -59,8 +59,7 @@ my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 # Write to Postgres
 write_pgtable(input = iris,
    field.types = my_fields,
-   conn = my_conn,
-   tbl_name = "iris")
+   conn = my_conn)
 
 ```
 
@@ -93,7 +92,7 @@ my_nchar <- get_nchar(my_list)
 my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 # Write to Postgres
-write_pgtable(input = iris,
+write_pgtable(input = my_list,
    field.types = my_fields,
    conn = my_conn)
 
