@@ -72,7 +72,7 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(iris)
 
 # Postgres Field Types
-my_fields <- set_pgfields(nchar_df, conn = local_con_test)
+my_fields <- set_pgfields(iris, conn = local_con_test)
 
 # Write to Postgres
 write_pgtable(input = iris,
@@ -107,7 +107,7 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(my_list)
 
 # Postgres Field Types
-my_fields <- set_pgfields(nchar_df, conn = my_conn)
+my_fields <- set_pgfields(my_list, conn = my_conn)
 
 # Write to Postgres
 write_pgtable(input = my_list,
@@ -138,7 +138,7 @@ iris$id <- seq_along(1:nrow(iris))
 my_nchar <- get_nchar(iris)
 
 # Postgres Field Types
-my_fields <- set_pgfields(nchar_df, conn = my_conn)
+my_fields <- set_pgfields(iris, conn = my_conn)
 
 get_sql_create(my_pg_fields, pkey = "id", tbl_name = "iris")
 ```
