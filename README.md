@@ -10,12 +10,12 @@ connection. The tools are built around the
 [`DBI`](https://github.com/r-dbi) and
 [`RPostgres`](https://github.com/r-dbi/RPostgres) packages.
 
-**What this package provides?**
-- Convenient connection to PostgreSQL with credentials
-- An automated assignment of PostgreSQL field type variable lengths based on a basic assessment of element lengths
-- Schema specification for database writing
-- Simple genration of a `SQL` `CREATE TABLE` statements
-- Vectorized to accept a `list` of `data.frames` to write to PostgreSQL
+**What this package provides?** - Convenient connection to PostgreSQL
+with credentials - An automated assignment of PostgreSQL field type
+variable lengths based on a basic assessment of element lengths - Schema
+specification for database writing - Simple genration of a `SQL` `CREATE
+TABLE` statements - Vectorized to accept a `list` of `data.frames` to
+write to PostgreSQL
 
 This is created for primary use among the Data/Programming team at CGHR
 to standardize and optimize the data storage and management workflow.
@@ -47,10 +47,16 @@ db_pw='my password here'
 db_name='my database name here'
 ```
 
+Those familiar with the [`tidyverse`](https://www.tidyverse.org/) can
+use the [`usethis`](https://github.com/r-lib/usethis) to easily access
+and edit the `.REnviron` file. See [this
+page](https://usethis.r-lib.org/reference/edit.html) for more details.
+
 ## Typical Workflow
 
 This section outlines a typical workflow of writing a data frame from a
 R session to a PostgreSQL database connection.
+<!-- put diagrammeR flowchart here -->
 
 <b>Example for single data frame using the `iris` dataset:</b>
 
@@ -72,7 +78,7 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(iris)
 
 # Postgres Field Types
-my_fields <- set_pgfields(iris, conn = local_con_test)
+my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 
 # Write to Postgres
 write_pgtable(input = iris,
@@ -107,7 +113,7 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(my_list)
 
 # Postgres Field Types
-my_fields <- set_pgfields(my_list, conn = my_conn)
+my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 # Write to Postgres
 write_pgtable(input = my_list,
@@ -138,7 +144,7 @@ iris$id <- seq_along(1:nrow(iris))
 my_nchar <- get_nchar(iris)
 
 # Postgres Field Types
-my_fields <- set_pgfields(iris, conn = my_conn)
+my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 get_sql_create(my_pg_fields, pkey = "id", tbl_name = "iris")
 ```
