@@ -1,5 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Use Knit button as output: github_document -->
 
 # pgtools
 
@@ -10,12 +10,14 @@ connection. The tools are built around the
 [`DBI`](https://github.com/r-dbi) and
 [`RPostgres`](https://github.com/r-dbi/RPostgres) packages.
 
-**What this package provides?**
-- Convenient connection to PostgreSQL with credentials
-- An automated assignment of PostgreSQL field type variable lengths based on a basic assessment of element lengths
-- Schema specification for database writing
-- Simple genration of a `SQL` `CREATE TABLE` statements
-- Vectorized to accept a `list` of `data.frames` to write to PostgreSQL
+**What this package provides?** 
+\- Convenient connection to PostgreSQL
+with credentials  
+\- An automated assignment of PostgreSQL field type variable lengths
+based on a basic assessment of element lengths  
+\- Schema specification for database writing  
+\- Simple genration of a `SQL` `CREATE TABLE` statements  
+\- Vectorized to accept a `list` of `data.frames` to write to PostgreSQL
 
 This is created for primary use among the Data/Programming team at CGHR
 to standardize and optimize the data storage and management workflow.
@@ -47,10 +49,16 @@ db_pw='my password here'
 db_name='my database name here'
 ```
 
+Those familiar with the [`tidyverse`](https://www.tidyverse.org/) can
+use the [`usethis`](https://github.com/r-lib/usethis) to easily access
+and edit the `.REnviron` file. See [this
+page](https://usethis.r-lib.org/reference/edit.html) for more details.
+
 ## Typical Workflow
 
 This section outlines a typical workflow of writing a data frame from a
 R session to a PostgreSQL database connection.
+<!-- put diagrammeR flowchart here -->
 
 <b>Example for single data frame using the `iris` dataset:</b>
 
@@ -72,12 +80,15 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(iris)
 
 # Postgres Field Types
-my_fields <- set_pgfields(iris, conn = local_con_test)
+my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 
 # Write to Postgres
-write_pgtable(input = iris,
+write_pgtable(
+   input = iris,
+   tbl_name = "iris",
    field.types = my_fields,
-   conn = my_conn)
+   conn = my_conn
+   )
 ```
 
 <b>Example for a list of data frames:</b>
@@ -107,12 +118,14 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(my_list)
 
 # Postgres Field Types
-my_fields <- set_pgfields(my_list, conn = my_conn)
+my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 # Write to Postgres
-write_pgtable(input = my_list,
+write_pgtable(
+   input = my_list,
    field.types = my_fields,
-   conn = my_conn)
+   conn = my_conn
+   )
 ```
 
 <b>Example obtaining the `SQL` statement for `CREATE TABLE` with added
@@ -138,7 +151,37 @@ iris$id <- seq_along(1:nrow(iris))
 my_nchar <- get_nchar(iris)
 
 # Postgres Field Types
-my_fields <- set_pgfields(iris, conn = my_conn)
+my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 get_sql_create(my_pg_fields, pkey = "id", tbl_name = "iris")
+```
+
+<b>Example of adding comments to the table and fields: </b>
+
+``` r
+data(iris)
+
+my_conn <- connect_pg(getenv = FALSE,
+   drv = DBI::dbDriver("Postgres"),
+   host = "myhostname",
+   port = 5432,
+   dbname = "mydb",
+   user = "myusername",
+   password = "mypw"
+ )
+
+tab_comment <- paste0("I love the `iris` dataset. ", "added: ", Sys.Date())
+
+my_comments <- c("length of the sepal", "width of the sepal", "length of the petal", "width of the petal", "the type of flower species")
+names(my_comments) <- names(iris) #remember to name the input for comments!
+
+write_pgtable(
+  input = iris,
+  tbl_name = "iris",
+  schema = schema_name,
+  conn = my_conn,
+  tbl.comments = tab_comment,
+  field.comments = my_comments,
+  clean_vars = TRUE
+)
 ```
