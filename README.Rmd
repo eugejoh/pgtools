@@ -47,6 +47,8 @@ db_pw='my password here'
 db_name='my database name here'
 ```
 
+Those familiar with the [`tidyverse`](https://www.tidyverse.org/) can use the [`usethis`](https://github.com/r-lib/usethis) to easily access and edit the `.REnviron` file. See [this page](https://usethis.r-lib.org/reference/edit.html) for more details.  
+
 ## Typical Workflow
 This section outlines a typical workflow of writing a data frame from a R session to a PostgreSQL database connection.
 <!-- put diagrammeR flowchart here -->
