@@ -5,7 +5,8 @@
 \title{Write \code{data.frames} to Postgres}
 \usage{
 write_pgtable(input, field.types = NULL, conn = NULL,
-  schema = "public", tbl_name = NULL, ...)
+  schema = "public", tbl_name = NULL, tbl.comments = NULL,
+  field.comments = NULL, clean_vars = FALSE, ...)
 }
 \arguments{
 \item{input}{a \code{data.frame} or \code{list} of data frames.}
@@ -16,7 +17,13 @@ write_pgtable(input, field.types = NULL, conn = NULL,
 
 \item{schema}{an optional argument to specify the desired database schema location, default is \code{public}}
 
-\item{tbl_name}{a require option if \code{nchar_df} argument is a \code{data.frame}}
+\item{tbl_name}{a required option if \code{nchar_df} argument is a single \code{data.frame}}
+
+\item{tbl.comments}{an optional argument to include a comment for the table being written, if a \code{list} it must be named}
+
+\item{field.comments}{an optional argument to include comments for each field type within the table being written , if a \code{list} it must be named}
+
+\item{clean_vars}{an optional \code{logical} argument that automatically cleans field names to be compatible with Postgres (removes upper-case and periods)}
 
 \item{...}{other arguments passed to \code{\link{dbWriteTable}()}.}
 }
@@ -32,6 +39,9 @@ the default values from \code{\link{dbDataType}()} will be used.
 \details{
 This function is essentially a wrapper for \code{\link{dbWriteTable}()}. See details in \code{RPostgres}
 documentation under \code{postgres-tables}.
+
+If \code{input} is a \code{list} of data frames, dimensions of \code{field.types}, \code{tbl.comments}, and
+\code{field.comments} must match \code{input}.
 }
 \examples{
 \dontrun{
