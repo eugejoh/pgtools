@@ -81,6 +81,7 @@ my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 # Write to Postgres
 write_pgtable(
    input = iris,
+   tbl_name = "iris",
    field.types = my_fields,
    conn = my_conn
    )
@@ -116,9 +117,11 @@ my_nchar <- get_nchar(my_list)
 my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 # Write to Postgres
-write_pgtable(input = my_list,
+write_pgtable(
+   input = my_list,
    field.types = my_fields,
-   conn = my_conn)
+   conn = my_conn
+   )
 
 ```
 
@@ -167,13 +170,14 @@ my_comments <- c("length of the sepal", "width of the sepal", "length of the pet
 names(my_comments) <- names(iris) #remember to name the input for comments!
 
 write_pgtable(
-   input = iris,
-   field.types = my_fields,
-   conn = my_conn,
-   tbl.comments = tab_comment,
-   field.comments = my_comments,
-   clean_vars = TRUE
-   )
+  input = iris,
+  tbl_name = "iris",
+  schema = schema_name,
+  conn = my_conn,
+  tbl.comments = tab_comment,
+  field.comments = my_comments,
+  clean_vars = TRUE
+)
 
 ```
 

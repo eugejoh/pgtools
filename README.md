@@ -1,5 +1,5 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Use Knit button as output: github_document -->
 
 # pgtools
 
@@ -81,9 +81,12 @@ my_nchar <- get_nchar(iris)
 my_fields <- set_pgfields(nchar_df, conn = local_con_test)
 
 # Write to Postgres
-write_pgtable(input = iris,
+write_pgtable(
+   input = iris,
+   tbl_name = "iris",
    field.types = my_fields,
-   conn = my_conn)
+   conn = my_conn
+   )
 ```
 
 <b>Example for a list of data frames:</b>
@@ -116,9 +119,11 @@ my_nchar <- get_nchar(my_list)
 my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 # Write to Postgres
-write_pgtable(input = my_list,
+write_pgtable(
+   input = my_list,
    field.types = my_fields,
-   conn = my_conn)
+   conn = my_conn
+   )
 ```
 
 <b>Example obtaining the `SQL` statement for `CREATE TABLE` with added
@@ -147,4 +152,34 @@ my_nchar <- get_nchar(iris)
 my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 get_sql_create(my_pg_fields, pkey = "id", tbl_name = "iris")
+```
+
+<b>Example of adding comments to the table and fields: </b>
+
+``` r
+data(iris)
+
+my_conn <- connect_pg(getenv = FALSE,
+   drv = DBI::dbDriver("Postgres"),
+   host = "myhostname",
+   port = 5432,
+   dbname = "mydb",
+   user = "myusername",
+   password = "mypw"
+ )
+
+tab_comment <- paste0("I love the `iris` dataset. ", "added: ", Sys.Date())
+
+my_comments <- c("length of the sepal", "width of the sepal", "length of the petal", "width of the petal", "the type of flower species")
+names(my_comments) <- names(iris) #remember to name the input for comments!
+
+write_pgtable(
+  input = iris,
+  tbl_name = "iris",
+  schema = schema_name,
+  conn = my_conn,
+  tbl.comments = tab_comment,
+  field.comments = my_comments,
+  clean_vars = TRUE
+)
 ```
