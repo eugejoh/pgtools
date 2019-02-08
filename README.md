@@ -10,7 +10,8 @@ connection. The tools are built around the
 [`DBI`](https://github.com/r-dbi) and
 [`RPostgres`](https://github.com/r-dbi/RPostgres) packages.
 
-**What this package provides?** - Convenient connection to PostgreSQL
+**What this package provides?** 
+\- Convenient connection to PostgreSQL
 with credentials  
 \- An automated assignment of PostgreSQL field type variable lengths
 based on a basic assessment of element lengths  
