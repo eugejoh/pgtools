@@ -53,7 +53,7 @@ conn = DBI::dbConnect(RSQL::SQLite(), ":memory:"))
 
 write_pgtable(input = iris,
 field.types = my_fields,
-conn =DBI::dbConnect(RSQL::SQLite(), ":memory:"),
+conn = DBI::dbConnect(RSQL::SQLite(), ":memory:"),
 tbl_name = "iris")
 }
 

@@ -35,7 +35,7 @@
 #'
 #' write_pgtable(input = iris,
 #' field.types = my_fields,
-#' conn =DBI::dbConnect(RSQL::SQLite(), ":memory:"),
+#' conn = DBI::dbConnect(RSQL::SQLite(), ":memory:"),
 #' tbl_name = "iris")
 #' }
 #'
@@ -119,6 +119,7 @@ write_pgtable <- function(
           statement = comment)
         qry
         DBI::dbClearResult(qry)})
+      message(paste0("COMMENT ON TABLE completed"))
     }
 
     if (!missing(field.comments)) {
@@ -140,6 +141,7 @@ write_pgtable <- function(
         statement = comment)
       qry
       DBI::dbClearResult(qry)})
+    message(paste0("COMMENT ON COLUMN completed"))
     }
 
 
@@ -177,9 +179,7 @@ write_pgtable <- function(
           statement = tbl_cl)
       qry
       DBI::dbClearResult(qry)
-
-
-
+      message(paste0("COMMENT ON TABLE completed"))
     }
 
     if (!missing(field.comments)) {
@@ -200,6 +200,7 @@ write_pgtable <- function(
           statement = comment)
         qry
         DBI::dbClearResult(qry)})
+      message(paste0("COMMENT ON COLUMN completed"))
       }
 
     }
