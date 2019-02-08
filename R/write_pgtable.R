@@ -63,7 +63,6 @@ write_pgtable <- function(
     x
   }
 
-
   if (clean_vars) {
     if (inherits(input, "list")) {
       input <- .all_to_lower(input)
@@ -74,10 +73,9 @@ write_pgtable <- function(
     }
 
     if (inherits(input, "data.frame")) {
-      names(input) <- tolower(colnames(input))
-      names(input) <- gsub("\\.", "_", colnames(input))
+      names(input) <- gsub("\\.", "_", tolower(names(input)))
+      names(field.comments) <- gsub("\\.", "_", tolower(names(field.comments)))
     }
-
 
   }
 
@@ -142,9 +140,8 @@ write_pgtable <- function(
       qry
       DBI::dbClearResult(qry)})
     message(paste0("COMMENT ON COLUMN completed"))
+
     }
-
-
   }
 
   if (inherits(input, "data.frame")) {
@@ -154,15 +151,16 @@ write_pgtable <- function(
     if (any(grepl("^\\.+$", names(input)))) {
       stop("remove periods in field names")
     }
+    if (missing(tbl_name)) stop("requires tbl_name")
 
-    if (missing(tbl_name)) tbl_name <- deparse(substitute(input))
     DBI::dbWriteTable(
       conn = conn,
-      name = DBI::Id(schema = schema, table = tbl_name),
+      name = DBI::Id(schema = schema, table = as.character(tbl_name)),
       value = input,
       field.types = field.types,
       overwrite = TRUE,
       ...)
+
     message(paste0("WRITE TABLE for ", tbl_name, " completed"))
 
     if (!missing(tbl.comments)) {
