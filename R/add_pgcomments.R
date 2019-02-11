@@ -1,11 +1,49 @@
+#' Write Postgres Comments for a Table
+#'
+#' This function allows a user connected to a Postgres database to easily add comments for a single table
+#' or the table's fields.
+#'
+#' @param conn a object inheriting from \code{DBIDriver} or \code{DBIConnection}.
+#' @param schema an optional argument to specify the desired database schema location, default is \code{public}
+#' @param tbl_name a required option if \code{nchar_df} argument is a single \code{data.frame}
+#' @param tbl.comments an optional argument to include a comment for the table being written, if a \code{list} it must be named
+#' @param field.comments an optional argument to include comments for each field type within the table being written , if a \code{list} it must be named
+#' @param override a \code{logical} argument whether to override the writing of pre-existing comments
+#'
+#' @return \code{add_pgcomments()} returns \code{TRUE} invisibly.
+#'
+#' @importFrom stats "setNames"
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' nchar_df <- get_nchar(iris)
+#'
+#' myconn <- DBI::dbConnect(RSQL::SQLite(), ":memory:")
+#'
+#' my_fields <- set_pgfields(nchar_df,
+#' default = FALSE,
+#' conn = myconn)
+#'
+#' write_pgtable(input = iris,
+#' field.types = my_fields,
+#' conn = myconn,
+#' tbl_name = "iris")
+#'
+#' add_pgcomments(conn = myconn,
+#' tbl_name = "iris",
+#' tbl.comments = "this is the iris dataset!",
+#' override = TRUE)
+#' }
+#'
 add_pgcomments <- function(
   conn = NULL,
   schema = "public",
   tbl_name = NULL,
   tbl.comments = NULL,
   field.comments = NULL,
-  override = FALSE,
-  ...) {
+  override = FALSE
+  ) {
 
   # check if schema exists in db
   if (nrow(DBI::dbGetQuery(conn,
@@ -74,7 +112,7 @@ add_pgcomments <- function(
     if (!is.na(DBI::sqlInterpolate(conn,
     "SELECT relname, obj_description(oid)
       FROM pg_class
-      WHERE relname = ?table;"
+      WHERE relname = ?table;",
     table = tbl_name)$obj_description)) {   # if !override and comments exists = stop
       stop("comments exists and override = FALSE")
 
