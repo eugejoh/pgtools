@@ -3,7 +3,7 @@
 
 # pgtools
 
-Standardized workflow for writing tables to PostgreSQL. This package
+Simplified workflow for writing tables to PostgreSQL. This package
 contains tools to provide a consistent workflow for writing
 `data.frames` existing in an `R` session to a PostgreSQL database
 connection. The tools are built around the
