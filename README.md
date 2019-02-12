@@ -3,7 +3,7 @@
 
 # pgtools
 
-Simplified workflow for writing tables to PostgreSQL. This package
+Simplified workflow for writing tables to PostgreSQL databases. This package
 contains tools to provide a consistent workflow for writing
 `data.frames` existing in an `R` session to a PostgreSQL database
 connection. The tools are built around the
@@ -18,6 +18,7 @@ based on a basic assessment of element lengths
 \- Schema specification for database writing  
 \- Simple genration of a `SQL` `CREATE TABLE` statements  
 \- Array-operation friendly to accept a `list` of `data.frames` to write to PostgreSQL
+\- Easy addition of comments to tables and fields
 
 This is created for primary use among the Data/Programming team at CGHR
 to standardize and optimize the data storage and management workflow.
