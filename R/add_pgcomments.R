@@ -113,7 +113,7 @@ add_pgcomments <- function(
     "SELECT relname, obj_description(oid)
       FROM pg_class
       WHERE relname = ?table;",
-    table = tbl_name)$obj_description)) {   # if !override and comments exists = stop
+    table = tbl_name)[["obj_description"]])) {   # if !override and comments exists = stop
       stop("comments exists and override = FALSE")
 
     } else { #if override = FALSE and comments DON't exist
