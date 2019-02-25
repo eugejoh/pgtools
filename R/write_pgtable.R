@@ -64,8 +64,18 @@ write_pgtable <- function(
     x
   }
 
+  #check if schema exists
+  if (nrow(DBI::dbGetQuery(conn,
+                           DBI::sqlInterpolate(conn,
+                                               "SELECT nspname
+                         FROM pg_catalog.pg_namespace
+                         WHERE nspname = ?schema_name",
+                                               schema_name = schema))) < 1)
+    stop("schema does not exist")
+
   # clean variable/field names if TRUE
   if (clean_vars) {
+    # for list
     if (inherits(input, "list")) {
       input <- .all_to_lower(input) #lower case
       tbl.comments <- gsub("\\.", "_", tolower(tbl.comments)) #remove periods in table comments with '_'
@@ -74,11 +84,32 @@ write_pgtable <- function(
       })
     }
 
+    # for data frame
     if (inherits(input, "data.frame")) {
       names(input) <- gsub("\\.", "_", tolower(names(input)))
-      names(field.comments) <- gsub("\\.", "_", tolower(names(field.comments)))
+      if (!missing(field.comments)) {
+        names(field.comments) <- gsub("\\.", "_", tolower(names(field.comments)))
+      }
+
+      if (!missing(field.types)) names(field.types) <- names(input) #need this if names change, bc field.types in dbWriteTable has is.na() >1
+
+      # if field comments exist, but no names -> STOP
+      if (!is.null(field.comments)) {
+        if (is.null(names(field.comments))) {
+          stop("field.comments requires names 1")
+        } else {
+          # if field comments exist, with names -> clean like field names
+          names(field.comments) <- gsub("\\.", "_", tolower(names(field.comments)))
+
+          if (!all(names(field.comments) %in% names(input))) stop("field.comment names don't match input names")
+
+        }
     }
 
+
+    }
+
+    message("names/variables were cleaned, check table")
   }
 
 
@@ -110,7 +141,6 @@ write_pgtable <- function(
                             table = DBI::dbQuoteIdentifier(conn = conn, x = DBI::SQL(tab)),
                             comment = tbl.comments[[tab]])
       })
-
 
 
       purrr::map(tbl_cl, function(comment) {
@@ -150,26 +180,31 @@ write_pgtable <- function(
 
 
   if (inherits(input, "data.frame")) {
+
+    if (is.null(tbl_name)) assign("tbl_name", deparse(substitute(input)))
+    if (grepl("[[:upper:]]+|\\.+", tbl_name)) stop("tbl_name contains either an uppercase or period")
+
     if (any(grepl("[[:upper:]]+", names(input)))) {
       stop("coerce field names to lower case")
     }
     if (any(grepl("\\.+", names(input)))) {
       stop("remove periods in field names")
     }
-    if (missing(tbl_name)) {
-      tbl_name <- deparse(substitute(input))
-    }
-    if (grepl("[A-Z]", tbl_name)) stop("table name contains an uppercase letter")
 
-    if (grepl("\\.", tbl_name)) stop("table name contains a period")
+    if ((grepl("[[:upper:]]+", tbl_name))) stop("table name contains a period")
 
+    if ((grepl("\\.+", tbl_name))) stop("table name contains a period")
+
+
+    # if (!is.null(field.comments)) {
+    #   if (!is.null(names(field.comments))) stop("field.comments requires names 2")
+    # }
 
     DBI::dbWriteTable(
       conn = conn,
       name = DBI::Id(schema = schema, table = as.character(tbl_name)),
       value = input,
       field.types = field.types,
-      overwrite = TRUE,
       ...)
 
     message(paste0("WRITE TABLE for ", tbl_name, " completed"))
@@ -191,8 +226,13 @@ write_pgtable <- function(
       message(paste0("COMMENT ON TABLE completed"))
     }
 
-    if (!missing(field.comments)) {
+
+
+    if (!is.null(field.comments)) {
+
       # add dimension checks, must be same as ncol(input)
+
+      #check if field.comments has names
 
       field_cl <- purrr::map_chr(names(field.comments), function(field) {
         DBI::sqlInterpolate(conn = conn,
