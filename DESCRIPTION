@@ -16,7 +16,7 @@ Imports:
   magrittr,
   glue,
   DBI,
-  RPostgres (>= 1.1.1)
+  RPostgres (>= 1.1.1),
   usethis
 Encoding: UTF-8
 LazyData: true

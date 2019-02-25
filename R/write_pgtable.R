@@ -146,14 +146,23 @@ write_pgtable <- function(
     }
   }
 
+# Data frame method -------------------------------------------------------
+
+
   if (inherits(input, "data.frame")) {
-    if (any(grepl("^[[:upper:]]+$", names(input)))) {
+    if (any(grepl("[[:upper:]]+", names(input)))) {
       stop("coerce field names to lower case")
     }
-    if (any(grepl("^\\.+$", names(input)))) {
+    if (any(grepl("\\.+", names(input)))) {
       stop("remove periods in field names")
     }
-    if (missing(tbl_name)) stop("requires tbl_name")
+    if (missing(tbl_name)) {
+      tbl_name <- deparse(substitute(input))
+    }
+    if (grepl("[A-Z]", tbl_name)) stop("table name contains an uppercase letter")
+
+    if (grepl("\\.", tbl_name)) stop("table name contains a period")
+
 
     DBI::dbWriteTable(
       conn = conn,
