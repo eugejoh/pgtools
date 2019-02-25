@@ -21,7 +21,7 @@
 #'
 #' myconn <- DBI::dbConnect(RSQL::SQLite(), ":memory:")
 #'
-#' my_fields <- set_pgfields(nchar_df,
+#' my_fields <- set_pgfields(iris,
 #' default = FALSE,
 #' conn = myconn)
 #'

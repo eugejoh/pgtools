@@ -51,6 +51,7 @@ write_pgtable <- function(
   ...
   ) {
 
+  # helper functions
   .all_to_lower <- function(x) {
     if (! is.null(names(x)))
       names(x) <- tolower(names(x))
@@ -63,10 +64,11 @@ write_pgtable <- function(
     x
   }
 
+  # clean variable/field names if TRUE
   if (clean_vars) {
     if (inherits(input, "list")) {
-      input <- .all_to_lower(input)
-      tbl.comments <- gsub("\\.", "_", tolower(tbl.comments))
+      input <- .all_to_lower(input) #lower case
+      tbl.comments <- gsub("\\.", "_", tolower(tbl.comments)) #remove periods in table comments with '_'
       field.comments <- lapply(field.comments, function(x) {
         setNames(x, gsub("\\.", "_", tolower(names(x))))
       })
