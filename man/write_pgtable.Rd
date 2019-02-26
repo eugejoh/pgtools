@@ -4,16 +4,16 @@
 \alias{write_pgtable}
 \title{Write \code{data.frames} to Postgres}
 \usage{
-write_pgtable(input, field.types = NULL, conn = NULL,
-  schema = "public", tbl_name = NULL, tbl.comments = NULL,
-  field.comments = NULL, clean_vars = FALSE, ...)
+write_pgtable(conn, input, field.types = NULL, schema = "public",
+  tbl_name = NULL, tbl.comments = NULL, field.comments = NULL,
+  clean_vars = FALSE, verbose = TRUE, ...)
 }
 \arguments{
+\item{conn}{a object inheriting from \code{DBIDriver} or \code{DBIConnection}.}
+
 \item{input}{a \code{data.frame} or \code{list} of data frames.}
 
 \item{field.types}{a named \code{character} vector or a named \code{list} of named \code{character} vectors.}
-
-\item{conn}{a object inheriting from \code{DBIDriver} or \code{DBIConnection}.}
 
 \item{schema}{an optional argument to specify the desired database schema location, default is \code{public}}
 
@@ -25,7 +25,11 @@ write_pgtable(input, field.types = NULL, conn = NULL,
 
 \item{clean_vars}{an optional \code{logical} argument that automatically cleans field names to be compatible with Postgres (removes upper-case and periods)}
 
-\item{...}{other arguments passed to \code{\link{dbWriteTable}()}.}
+\item{verbose}{a \code{logical} argument whether to display messages on database writing steps}
+
+\item{...}{other arguments passed to \code{\link{dbWriteTable}()}.
+
+The \code{clean_vars} argument does not clean table names for list objects. The names of the dataframes inside the input list must be changed manually.}
 }
 \value{
 \code{write_pgtable()} returns \code{TRUE} invisibly.

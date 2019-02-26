@@ -44,9 +44,9 @@
 #' }
 #'
 write_pgtable <- function(
+  conn,
   input,
   field.types = NULL,
-  conn,
   schema = "public",
   tbl_name = NULL,
   tbl.comments = NULL,
@@ -170,21 +170,6 @@ write_pgtable <- function(
         warning("field comments length differ from existing fields")
     }
 
-
-
-
-    # if (!is.null(field.comments)) {
-    #   if (!any(unlist(lapply(field.comments, length)) == unlist(lapply(input, ncol))))
-    #     stop("field comments length differ from existing fields")
-    #
-    #   if (is.null(unlist(lapply(field.comments, names)))) {
-    #     stop("field comments require names")
-    #   }
-    #
-    #   # if (!all(unlist(lapply(field.comments, names)) == unlist(lapply(input, colnames))))
-    #   #   stop("field comments names differ from field names")
-    # }
-
     nombres <- names(input)
 
     purrr::map(nombres, function(tab) {
@@ -259,11 +244,6 @@ write_pgtable <- function(
 
     if ((grepl("\\.+", tbl_name))) stop("table name contains a period")
 
-
-    # if (!is.null(field.comments)) {
-    #   if (!is.null(names(field.comments))) stop("field.comments requires names 2")
-    # }
-
     DBI::dbWriteTable(
       conn = conn,
       name = DBI::Id(schema = schema, table = as.character(tbl_name)),
@@ -291,12 +271,7 @@ write_pgtable <- function(
     }
 
 
-
     if (!is.null(field.comments)) {
-
-      # add dimension checks, must be same as ncol(input)
-
-      #check if field.comments has names
 
       field_cl <- purrr::map_chr(names(field.comments), function(field) {
         DBI::sqlInterpolate(conn = conn,
