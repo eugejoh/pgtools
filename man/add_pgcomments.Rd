@@ -4,8 +4,8 @@
 \alias{add_pgcomments}
 \title{Write Postgres Comments for a Table}
 \usage{
-add_pgcomments(conn = NULL, schema = "public", tbl_name = NULL,
-  tbl.comments = NULL, field.comments = NULL, override = FALSE)
+add_pgcomments(conn, schema = "public", tbl_name = NULL,
+  tbl.comments = NULL, field.comments = NULL, overwrite = FALSE)
 }
 \arguments{
 \item{conn}{a object inheriting from \code{DBIDriver} or \code{DBIConnection}.}
@@ -18,7 +18,7 @@ add_pgcomments(conn = NULL, schema = "public", tbl_name = NULL,
 
 \item{field.comments}{an optional argument to include comments for each field type within the table being written , if a \code{list} it must be named}
 
-\item{override}{a \code{logical} argument whether to override the writing of pre-existing comments}
+\item{overwrite}{a \code{logical} argument whether to override the writing of pre-existing comments}
 }
 \value{
 \code{add_pgcomments()} returns \code{TRUE} invisibly.
