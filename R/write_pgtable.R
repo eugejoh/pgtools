@@ -127,9 +127,6 @@ write_pgtable <- function(
   }
 
 
-# List method -------------------------------------------------------------
-
-
   if (inherits(input, "list")) {
 
     if (is.null(names(input))) stop("required names for list input")
@@ -224,8 +221,6 @@ write_pgtable <- function(
 
     }
   }
-
-# Data frame method -------------------------------------------------------
 
 
   if (inherits(input, "data.frame")) {

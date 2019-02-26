@@ -9,6 +9,7 @@
 #' @param tbl.comments an optional argument to include a comment for the table being written, if a \code{list} it must be named
 #' @param field.comments an optional argument to include comments for each field type within the table being written , if a \code{list} it must be named
 #' @param overwrite a \code{logical} argument whether to override the writing of pre-existing comments
+#' @param verbose a \code{logical} argument whether to display messages on comment writing steps
 #'
 #' @return \code{add_pgcomments()} returns \code{TRUE} invisibly.
 #'
@@ -33,7 +34,7 @@
 #' add_pgcomments(conn = myconn,
 #' tbl_name = "iris",
 #' tbl.comments = "this is the iris dataset!",
-#' override = TRUE)
+#' overwrite = TRUE)
 #' }
 #'
 add_pgcomments <- function(
@@ -42,6 +43,7 @@ add_pgcomments <- function(
   tbl_name = NULL,
   tbl.comments = NULL,
   field.comments = NULL,
+  verbose = TRUE,
   overwrite = FALSE
 ) {
 
@@ -73,7 +75,7 @@ add_pgcomments <- function(
       statement = tbl_cl)
     qry
     DBI::dbClearResult(qry)
-    message(paste0("COMMENT ON TABLE '", tbl_name,"' completed"))
+    if (verbose) message(paste0("COMMENT ON TABLE '", tbl_name,"' completed"))
   }
 
   # write field comments
@@ -95,7 +97,7 @@ add_pgcomments <- function(
       qry
       DBI::dbClearResult(qry)})
 
-    message(paste0("COMMENT ON COLUMN ", paste("'",names(field.comments),"'", collapse = ", " , sep = "")," completed"))
+    if (verbose)  message(paste0("COMMENT ON COLUMN ", paste("'",names(field.comments),"'", collapse = ", " , sep = "")," completed"))
   }
 
 
@@ -107,10 +109,10 @@ add_pgcomments <- function(
                                                      sql = "SELECT obj_description(?schematable::regclass) AS tbl_comment;",
                                                      schematable = paste0(schema, ".", tbl_name)))[["tbl_comment"]]
     if (is.na(tblcomment_val)) { #if comment doesn't exist
-      message("comment doesn't exist")
+      if (verbose) message("comment doesn't exist")
     }
     if (!is.na(tblcomment_val)) { #if comment exists
-      message("comment exists")
+      if (verbose) message("comment exists")
     }
 
     # check when overwrite = FALSE and comment exists... STOP

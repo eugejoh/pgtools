@@ -26,6 +26,7 @@
 #'
 #' @examples
 #' \dontrun{
+#' data("iris")
 #' nchar_df <- get_nchar(iris)
 #'
 #' set_pgfields(nchar_df, conn = local_con_test)

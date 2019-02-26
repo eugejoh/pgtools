@@ -5,7 +5,8 @@
 \title{Write Postgres Comments for a Table}
 \usage{
 add_pgcomments(conn, schema = "public", tbl_name = NULL,
-  tbl.comments = NULL, field.comments = NULL, overwrite = FALSE)
+  tbl.comments = NULL, field.comments = NULL, verbose = TRUE,
+  overwrite = FALSE)
 }
 \arguments{
 \item{conn}{a object inheriting from \code{DBIDriver} or \code{DBIConnection}.}
@@ -17,6 +18,8 @@ add_pgcomments(conn, schema = "public", tbl_name = NULL,
 \item{tbl.comments}{an optional argument to include a comment for the table being written, if a \code{list} it must be named}
 
 \item{field.comments}{an optional argument to include comments for each field type within the table being written , if a \code{list} it must be named}
+
+\item{verbose}{a \code{logical} argument whether to display messages on comment writing steps}
 
 \item{overwrite}{a \code{logical} argument whether to override the writing of pre-existing comments}
 }
@@ -45,7 +48,7 @@ tbl_name = "iris")
 add_pgcomments(conn = myconn,
 tbl_name = "iris",
 tbl.comments = "this is the iris dataset!",
-override = TRUE)
+overwrite = TRUE)
 }
 
 }
