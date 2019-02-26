@@ -19,7 +19,11 @@
 #' @param tbl.comments an optional argument to include a comment for the table being written, if a \code{list} it must be named
 #' @param field.comments an optional argument to include comments for each field type within the table being written , if a \code{list} it must be named
 #' @param clean_vars an optional \code{logical} argument that automatically cleans field names to be compatible with Postgres (removes upper-case and periods)
+#' @param verbose a \code{logical} argument whether to display messages on database writing steps
 #' @param ... other arguments passed to \code{\link{dbWriteTable}()}.
+#'
+#' The \code{clean_vars} argument does not clean table names for list objects. The names of the dataframes inside the input list must be changed manually.
+#'
 #'
 #' @return \code{write_pgtable()} returns \code{TRUE} invisibly.
 #'
@@ -42,12 +46,13 @@
 write_pgtable <- function(
   input,
   field.types = NULL,
-  conn = NULL,
+  conn,
   schema = "public",
   tbl_name = NULL,
   tbl.comments = NULL,
   field.comments = NULL,
   clean_vars = FALSE,
+  verbose = TRUE,
   ...
   ) {
 
@@ -64,34 +69,45 @@ write_pgtable <- function(
     x
   }
 
+  if (missing(conn)) stop("must specify db connection")
+
   #check if schema exists
   if (nrow(DBI::dbGetQuery(conn,
-                           DBI::sqlInterpolate(conn,
-                                               "SELECT nspname
-                         FROM pg_catalog.pg_namespace
-                         WHERE nspname = ?schema_name",
-                                               schema_name = schema))) < 1)
-    stop("schema does not exist")
+    DBI::sqlInterpolate(conn,
+    "SELECT nspname
+    FROM pg_catalog.pg_namespace
+    WHERE nspname = ?schema_name",
+    schema_name = schema))) < 1) stop("schema does not exist")
 
   # clean variable/field names if TRUE
   if (clean_vars) {
     # for list
     if (inherits(input, "list")) {
-      input <- .all_to_lower(input) #lower case
-      tbl.comments <- gsub("\\.", "_", tolower(tbl.comments)) #remove periods in table comments with '_'
-      field.comments <- lapply(field.comments, function(x) {
-        setNames(x, gsub("\\.", "_", tolower(names(x))))
-      })
+      input <- .all_to_lower(input) #lower case recursively
+
+      if (!is.null(field.comments)) {
+        if (is.null(unlist(lapply(field.comments, names))))
+          stop("field comments names don't exist")
+
+        field.comments <- lapply(field.comments, function(x) {
+          names(x) <- gsub("\\.", "_", tolower(names(x)))
+          return(x)
+        })
+
+        names(field.comments) <- gsub("\\.", "_", tolower(names(field.comments)))
+
+      }
+
     }
 
     # for data frame
     if (inherits(input, "data.frame")) {
       names(input) <- gsub("\\.", "_", tolower(names(input)))
-      if (!missing(field.comments)) {
+      if (!is.null(field.comments)) {
         names(field.comments) <- gsub("\\.", "_", tolower(names(field.comments)))
       }
 
-      if (!missing(field.types)) names(field.types) <- names(input) #need this if names change, bc field.types in dbWriteTable has is.na() >1
+      if (!is.null(field.types)) names(field.types) <- names(input) #need this if names change, bc field.types in dbWriteTable has is.na() >1
 
       # if field comments exist, but no names -> STOP
       if (!is.null(field.comments)) {
@@ -101,40 +117,88 @@ write_pgtable <- function(
           # if field comments exist, with names -> clean like field names
           names(field.comments) <- gsub("\\.", "_", tolower(names(field.comments)))
 
-          if (!all(names(field.comments) %in% names(input))) stop("field.comment names don't match input names")
-
+          if (!all(names(field.comments) %in% names(input)))
+            stop("field.comment names don't match input names")
+          }
         }
     }
 
-
-    }
-
-    message("names/variables were cleaned, check table")
+    if (verbose) message("clean table names/variables")
   }
 
 
+# List method -------------------------------------------------------------
+
+
   if (inherits(input, "list")) {
-    if (any(grepl("^[[:upper:]]+$", unlist(lapply(input, colnames))))) {
+
+    if (is.null(names(input))) stop("required names for list input")
+
+    if (any(grepl("[[:upper:]]+|\\.+", names(input))))
+      stop("table names are either uppercase or has a period")
+
+    if (any(grepl("[[:upper:]]+", unlist(lapply(input, colnames)))))
       stop("coerce field names to lower case")
-    }
-    if (any(grepl("\\.+", unlist(lapply(input, colnames))))) {
+
+    if (any(grepl("\\.", unlist(lapply(input, colnames)))))
       stop("remove periods in field names")
+
+    if (!is.null(tbl_name)) {
+      if (!all(names(input) == tbl_name))
+        stop("table names conflict, leave `tbl_name` as NULL")
     }
 
-    purrr::map(names(input), function(tab) {
+    if (!is.null(tbl.comments)) {
+      if (length(tbl.comments) != length(names(input)))
+        stop("table comments length not equal to tables")
+
+      if (is.null(names(tbl.comments)))
+        stop("table comment names required")
+
+      if (!all(names(tbl.comments) == names(input)))
+        stop("table comments names differ from table names")
+
+      write_tbl_comments <- TRUE
+    }
+
+    if (!is.null(field.comments)) {
+      if (is.null(unlist(lapply(field.comments, names)))) {
+            stop("field comments require names")
+          }
+
+      if (!all(unlist(lapply(field.comments, length)) == unlist(lapply(input, ncol))))
+        warning("field comments length differ from existing fields")
+    }
+
+
+
+
+    # if (!is.null(field.comments)) {
+    #   if (!any(unlist(lapply(field.comments, length)) == unlist(lapply(input, ncol))))
+    #     stop("field comments length differ from existing fields")
+    #
+    #   if (is.null(unlist(lapply(field.comments, names)))) {
+    #     stop("field comments require names")
+    #   }
+    #
+    #   # if (!all(unlist(lapply(field.comments, names)) == unlist(lapply(input, colnames))))
+    #   #   stop("field comments names differ from field names")
+    # }
+
+    nombres <- names(input)
+
+    purrr::map(nombres, function(tab) {
       DBI::dbWriteTable(
         conn = conn,
         name = DBI::Id(schema = schema, table = tab),
         value = input[[tab]],
         field.types = field.types[[tab]],
-        overwrite = TRUE,
         ...)
-      message(paste0("WRITE TABLE for ", tab, " completed"))
+      if (verbose) message(paste0("WRITE TABLE for ", tab, " completed"))
     })
 
-    if (!missing(tbl.comments)) {
-      # add dimension checks
-      tbl_cl <- purrr::map(names(input), function(tab) {
+    if (!is.null(tbl.comments)) {
+      tbl_cl <- purrr::map(nombres, function(tab) {
         DBI::sqlInterpolate(conn = conn,
                             sql = "COMMENT ON TABLE ?schema.?table IS ?comment",
                             schema = DBI::dbQuoteIdentifier(conn = conn, x = DBI::SQL(schema)),
@@ -149,12 +213,12 @@ write_pgtable <- function(
           statement = comment)
         qry
         DBI::dbClearResult(qry)})
-      message(paste0("COMMENT ON TABLE completed"))
+      if (verbose) message(paste0("COMMENT ON TABLE completed"))
     }
 
-    if (!missing(field.comments)) {
-      # add dimension checks
-      field_cl <- purrr::map(names(input), function(tab) {
+    if (!is.null(field.comments)) {
+
+      field_cl <- purrr::map(nombres, function(tab) {
       purrr::map_chr(names(field.comments[[tab]]), function(field) {
         DBI::sqlInterpolate(conn = conn,
                             sql = "COMMENT ON COLUMN ?schema.?table.?fields IS ?comment",
@@ -171,7 +235,7 @@ write_pgtable <- function(
         statement = comment)
       qry
       DBI::dbClearResult(qry)})
-    message(paste0("COMMENT ON COLUMN completed"))
+    if (verbose) message(paste0("COMMENT ON COLUMN completed"))
 
     }
   }
@@ -207,9 +271,9 @@ write_pgtable <- function(
       field.types = field.types,
       ...)
 
-    message(paste0("WRITE TABLE for ", tbl_name, " completed"))
+    if (verbose) message(paste0("WRITE TABLE for ", tbl_name, " completed"))
 
-    if (!missing(tbl.comments)) {
+    if (!is.null(tbl.comments)) {
       if (!is.character(tbl.comments)) stop("tbl.comments must be character")
 
       tbl_cl <- DBI::sqlInterpolate(conn = conn,
@@ -223,7 +287,7 @@ write_pgtable <- function(
           statement = tbl_cl)
       qry
       DBI::dbClearResult(qry)
-      message(paste0("COMMENT ON TABLE completed"))
+      if (verbose) message(paste0("COMMENT ON TABLE completed"))
     }
 
 
@@ -249,7 +313,7 @@ write_pgtable <- function(
           statement = comment)
         qry
         DBI::dbClearResult(qry)})
-      message(paste0("COMMENT ON COLUMN completed"))
+      if (verbose) message(paste0("COMMENT ON COLUMN completed"))
       }
 
     }
