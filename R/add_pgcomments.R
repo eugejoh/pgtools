@@ -104,8 +104,8 @@ add_pgcomments <- function(
   # WHEN tbl.comments EXISTS do...(when you want to change the table comments)
   if (!is.null(tbl.comments)) {
     # check if comments for table exists
-    tblcomment_val <- dbGetQuery(con_local,
-                                 DBI::sqlInterpolate(con_local,
+    tblcomment_val <- DBI::dbGetQuery(conn,
+                                 DBI::sqlInterpolate(conn,
                                                      sql = "SELECT obj_description(?schematable::regclass) AS tbl_comment;",
                                                      schematable = paste0(schema, ".", tbl_name)))[["tbl_comment"]]
     if (is.na(tblcomment_val)) { #if comment doesn't exist
@@ -138,7 +138,7 @@ add_pgcomments <- function(
 
 
     # if field comment vector has MATCHING names, then write field comments
-    field_names <- dbListFields(conn = conn, tbl_name)
+    field_names <- DBI::dbListFields(conn = conn, tbl_name)
 
     write_field_comments(field.comments = field.comments[field_names[field_names %in% names(field.comments)]],
                          schema, #takes field names

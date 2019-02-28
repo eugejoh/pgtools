@@ -6,9 +6,3 @@ test_that("null entries for `connect_pg()`", {
 
 })
 
-
-test_that("conflict for getenv specified", {
-
-  expect_success(connect_pg(getenv = TRUE, host = Sys.getenv("db_ip")))
-
-})
