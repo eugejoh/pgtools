@@ -9,13 +9,13 @@ Description: This package provides a standardized workflow to write R data frame
 License: GPL (>=3)
 Depends: R (>= 3.5.0)
 Imports:
-  readr,
-  purrr,
-  tibble,
-  dplyr,
-  magrittr,
-  glue,
-  DBI,
+  readr (>= 1.1.1),
+  purrr (>= 0.2.5),
+  tibble (>= 1.4.2),
+  dplyr (>= 0.7.6),
+  magrittr (>= 1.5.0),
+  glue (>= 1.3.0),
+  DBI (>= 1.0.0),
   RPostgres (>= 1.1.1),
   usethis
 Encoding: UTF-8
