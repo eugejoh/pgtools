@@ -3,22 +3,22 @@
 
 # pgtools
 
-Simplified workflow for writing tables to PostgreSQL databases. This package
+Standardized workflow for writing tables to PostgreSQL. This package
 contains tools to provide a consistent workflow for writing
 `data.frames` existing in an `R` session to a PostgreSQL database
 connection. The tools are built around the
 [`DBI`](https://github.com/r-dbi) and
 [`RPostgres`](https://github.com/r-dbi/RPostgres) packages.
 
-**What this package provides?**  
-\- Convenient connection to PostgreSQL
-with credentials  
-\- An automated assignment of PostgreSQL field type variable lengths
-based on a basic assessment of element lengths  
-\- Schema specification for database writing  
-\- Simple genration of a `SQL` `CREATE TABLE` statements  
-\- Array-operation friendly to accept a `list` of `data.frames` to write to PostgreSQL  
-\- Easy addition of comments to tables and fields  
+**What this package provides?**
+
+  - Convenient connection to PostgreSQL with credentials  
+  - An automated assignment of PostgreSQL field type variable lengths
+    based on a basic assessment of element lengths  
+  - Schema specification for database writing  
+  - Simple genration of a `SQL` `CREATE TABLE` statements  
+  - Vectorized to accept a `list` of `data.frames` to write to
+    PostgreSQL
 
 This is created for primary use among the Data/Programming team at CGHR
 to standardize and optimize the data storage and management workflow.
@@ -81,7 +81,7 @@ my_conn <- connect_pg(getenv = FALSE,
 my_nchar <- get_nchar(iris)
 
 # Postgres Field Types
-my_fields <- set_pgfields(nchar_df, conn = local_con_test)
+my_fields <- set_pgfields(nchar_df, conn = my_conn)
 
 # Write to Postgres
 write_pgtable(
