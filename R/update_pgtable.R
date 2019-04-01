@@ -40,64 +40,28 @@ create_pgfield <- function(conn, table_name, field_name, fieldtype, schema) {
 #' @export
 #'
 #' @examples
-update_pgfield <- function(conn, table_name, value, field_name, key, schema, verbose = FALSE, par = TRUE) {
+update_pgfield <- function(conn, table_name, value, field_name, key, schema, verbose = FALSE) {
   if (missing(conn)) stop("required connection")
   if (missing(schema)) schema <- "public"
   if (missing(table_name)) stop("require table name")
   if (missing(field_name)) stop("specify column name")
 
-  if (par) {
-    require(parallel)
-    require(foreach)
-    cl <- parallel::makeCluster(parallel::detectCores()-1)
-    doParallel::registerDoParallel(cl)
-    parallel::clusterEvalQ(cl, {
-      library(DBI)
-      library(RPostgres)
-      conn <- DBI::dbConnect(drv = dbDriver("Postgres"),
-                             host = "localhost",
-                             port = 5432, dbname = "srs_baseline2014_v1",
-                             user = Sys.getenv("db_local_user"),
-                             password = Sys.getenv("db_local_pw")
-      )
-    })
-
-
-    updater <- function(conn, i) {
-      sql_statement <- DBI::sqlInterpolate(
-        conn = conn,
-        sql = paste0("UPDATE ?schema.?table SET ?field = $1 WHERE ?id=",i),
-        schema = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(schema)),
-        table = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(table_name)),
-        field = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(field_name)),
-        id = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(key))
-      )
-      DBI::dbExecute(conn = conn, statement = sql_statement,
-                     params = list(value[i]))
-    }
-
-    foreach(i = seq_along(value), .inorder=FALSE, .noexport = "conn",
-            .packages=c("DBI", "RPostgres")) %dopar% {
-              updater(conn, i)
-            }
-
-  } else if (!par) {
-    for(i in seq_along(value)) {
-      sql_statement <- DBI::sqlInterpolate(
-        conn = conn,
-        sql = paste0("UPDATE ?schema.?table SET ?field = $1 WHERE ?id=",i),
-        schema = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(schema)),
-        table = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(table_name)),
-        field = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(field_name)),
-        id = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(key))
-      )
-      DBI::dbExecute(conn = conn, statement = sql_statement,
-                     params = list(value[i]))
-      if (verbose)
-        message(paste0("[i] = ", i, "/", length(value), " ", round(i/length(value),1)*100, "% complete"))
+  for(i in seq_along(value)) {
+    sql_statement <- DBI::sqlInterpolate(
+      conn = conn,
+      sql = paste0("UPDATE ?schema.?table SET ?field = $1 WHERE ?id=",i),
+      schema = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(schema)),
+      table = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(table_name)),
+      field = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(field_name)),
+      id = DBI::dbQuoteIdentifier(conn = conn, DBI::SQL(key))
+    )
+    DBI::dbExecute(conn = conn, statement = sql_statement,
+                   params = list(value[i]))
+    if (verbose)
+      message(paste0("[i] = ", i, "/", length(value), " ", round(i/length(value),1)*100, "% complete"))
     }
   }
-}
+
 
 #' drop_pgfield
 #'
