@@ -42,11 +42,13 @@ set_pgfields <- function(
   if (missing(nchar_df)) nchar_df <- get_nchar(input)
 
   # helper functions
-  .non_default_pgtypes <- function(dat = NULL) {
+  .non_default_pgtypes <- function(dat = NULL, input) {
+
+    if (nrow(input >= 32767)) pg_int <- "integer" else pg_int <- "small_int"
 
     .add_dtype <- function(type = NULL) {
       ou <- dplyr::if_else(type == "factor", "character varying",
-                           dplyr::if_else(type == "integer", "smallint",
+                           dplyr::if_else(type == "integer", pg_int,
                                           dplyr::if_else(type == "numeric", "numeric",
                                                          dplyr::if_else(type == "character", "character varying",
                                                                         "not assigned"))))
