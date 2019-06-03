@@ -47,7 +47,7 @@ set_pgfields <- function(
     .add_dtype <- function(type = NULL) {
       ou <- dplyr::if_else(type == "factor", "character varying",
                            dplyr::if_else(type == "integer", "smallint",
-                                          dplyr::if_else(type == "numeric", "real",
+                                          dplyr::if_else(type == "numeric", "numeric",
                                                          dplyr::if_else(type == "character", "character varying",
                                                                         "not assigned"))))
       return(ou)
