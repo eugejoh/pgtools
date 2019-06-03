@@ -44,7 +44,7 @@ set_pgfields <- function(
   # helper functions
   .non_default_pgtypes <- function(dat = NULL, input) {
 
-    if (nrow(input >= 32767)) pg_int <- "integer" else pg_int <- "small_int"
+    if (nrow(input) >= 32767) pg_int <- "integer" else pg_int <- "small_int"
 
     .add_dtype <- function(type = NULL) {
       ou <- dplyr::if_else(type == "factor", "character varying",
@@ -89,7 +89,7 @@ set_pgfields <- function(
                                DBI::dbDataType(conn, input),
                                function(tab, default_type) {dplyr::mutate(dat, pg_type = default_type)})
       } else {
-        nchar_df3 <- purrr::map(nchar_df, .non_default_pgtypes)
+        nchar_df3 <- purrr::map(nchar_df, .non_default_pgtypes(dat = ., input = input))
         }
 
     out <- purrr::map(nchar_df3, .final_out)
@@ -105,7 +105,7 @@ set_pgfields <- function(
         tibble::rownames_to_column(data.frame(pg_type = DBI::dbDataType(conn, input))),
         by = "rowname")
       } else {
-        nchar_df3 <- .non_default_pgtypes(nchar_df)
+        nchar_df3 <- .non_default_pgtypes(dat = nchar_df, input = input)
       }
 
     out <- .final_out(nchar_df3)
