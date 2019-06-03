@@ -44,7 +44,7 @@ set_pgfields <- function(
   # helper functions
   .non_default_pgtypes <- function(dat = NULL, input) {
 
-    if (nrow(input) >= 32767) pg_int <- "integer" else pg_int <- "small_int"
+    if (nrow(input) >= 32767) pg_int <- "integer" else pg_int <- "smallint"
 
     .add_dtype <- function(type = NULL) {
       ou <- dplyr::if_else(type == "factor", "character varying",
