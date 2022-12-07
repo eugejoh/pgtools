@@ -44,14 +44,18 @@ set_pgfields <- function(
   # helper functions
   .non_default_pgtypes <- function(dat = NULL, input) {
 
-    if (nrow(input) >= 32767) pg_int <- "integer" else pg_int <- "smallint"
+    #if (nrow(input) >= 32767) pg_int <- "integer" else pg_int <- "smallint" # PR
+    pg_int <- "smallint" # PR
 
     .add_dtype <- function(type = NULL) {
       ou <- dplyr::if_else(type == "factor", "character varying",
                            dplyr::if_else(type == "integer", pg_int,
-                                          dplyr::if_else(type == "numeric", "numeric",
-                                                         dplyr::if_else(type == "character", "character varying",
-                                                                        "not assigned"))))
+                                          dplyr::if_else(type == "integer64", "bigint",
+                                                         dplyr::if_else(type == "numeric", "numeric",
+                                                                        dplyr::if_else(type=="POSIXct", "timestamp with time zone", 
+                                                                                       dplyr::if_else(type=="Date", "date", 
+                                                                                                      dplyr::if_else(type == "character", "character varying",
+                                                                                                                                                                                        "not assigned")))))))
       return(ou)
     }
     .add_ndtype <- function(

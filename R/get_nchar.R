@@ -45,7 +45,7 @@ get_nchar <- function(
   }
 
   .keep_old_class <- function(y) {
-    purrr::map_chr(y, class)
+    purrr::map_chr(y, function (y) {if(length(class(y))>1) {class(y)[[1]]} else {class(y)}})
   }
 
   if (inherits(input, "list")) {
